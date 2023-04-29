@@ -14,7 +14,8 @@ from matplotlib.figure import Figure
 from matplotlib import pyplot as plt
 import numpy as np
 spremiClicked = False
-file_path = Image
+file_path = ""
+dodajSlikuClicked = False
 
 def switchClicked():
     global spremiClicked
@@ -318,9 +319,26 @@ def open_detaljiT1():
     
 ###################### BOTUNI DODAVANJA BILJKE ##############
 def dodaj_sliku():
+    global dodajSlikuClicked
     global file_path
     file_path = filedialog.askopenfilename()
-    
+    dodajSlikuClicked = True
+    if dodajSlikuClicked:
+        try:
+            with open(file_path, 'rb') as file:
+                contents = file.read()
+                biljka = Image.open(io.BytesIO(contents))
+                biljkaR = biljka.resize((150, 150), Image.ANTIALIAS)
+                biljkaN = ImageTk.PhotoImage(biljkaR)
+                label = tk.Label(root, image=biljkaN, bg='DarkSeaGreen2')
+                label.image = biljkaN
+                label.place(x=450, y=30)
+                label.config(image=biljkaN)
+                dodajSlikuClicked = False
+        except FileNotFoundError:
+            print("File not found!")
+
+
 def dodaj_posudu():
     quit
 
@@ -390,6 +408,7 @@ def spremi(unosidBiljke, unosimeBiljke, unospolozajBiljke, unosmintemp, unosmaxt
         switchClicked()
 ####################### DODAJ BILJKU ##################
 def dodaj_biljku():
+    global dodajSlikuClicked
     global spremiClicked
     global file_path
     spremi_list = []
@@ -433,16 +452,12 @@ def dodaj_biljku():
     unosmaxHrana = Entry(root,show="",width=7, font=('Calibri', 15))
     unosmaxHrana.place(x=390, y=310)
 
+
+
     dodajSlikuButton=Button(root, text="Dodaj sliku",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=dodaj_sliku).place(x=20, y=380)
     dodajPosuduButton=Button(root, text="Dodaj posudu",width=10, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=dodaj_posudu).place(x=110, y=380)
     spremiButton=Button(root, text="Spremi",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command= lambda:[switchClicked(), spremi(unosidBiljke, unosimeBiljke, unospolozajBiljke, unosmintemp, unosmaxtemp, unosminVlaznost, unosmaxVlaznost, unosminSvjetlost, unosmaxSvjetlost, unosminHrana, unosmaxHrana, file_path) ]).place(x=200, y=380)
-    
-    biljka = Image.open(file_path)
-    biljkaR = biljka.resize((100, 100), Image.ANTIALIAS)
-    biljkaN = ImageTk.PhotoImage(biljkaR)
-    label = tk.Label(root, image=biljkaN, bg='DarkSeaGreen2')
-    label.place(x=220,y=40)
-
+ 
     # frame = tk.Frame(root, bg='DarkSeaGreen3', width=350, height=150)
     # frame.place(x=10, y=10)
 
