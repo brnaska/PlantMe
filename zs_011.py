@@ -14,7 +14,7 @@ from matplotlib.figure import Figure
 from matplotlib import pyplot as plt
 import numpy as np
 spremiClicked = False
-file_path = ''
+file_path = Image
 
 def switchClicked():
     global spremiClicked
@@ -30,7 +30,6 @@ mojaappsat=now.strftime("%H:%M:%S")
 urljson=f'https://api.tutiempo.net/json/?lan=en&apid=zwDX4azaz4X4Xqs&ll=43.51436051979722,16.444448215112512'
 response=urlopen(urljson)
 data_json=json.loads(response.read())
-#print(data_json)
 
 root = tk.Tk()
 root.title(f'PyFloraPosuda aplikacija - Prijava')
@@ -316,330 +315,12 @@ def open_detaljiT1():
     histoButton=Button(root, text="Histo",width=10, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=open_histo).place(x=640, y=250)
 
     root.mainloop()
-
-def open_detaljiT2():
-    clearRoot(root)
-    root.title(f'PyFloraPosuda - Posude')
-    root['bg'] = 'DarkSeaGreen2'
-    root.geometry('900x500')
-
-    image2 = Image.open(r'Slike\Posude\Promjer9cm.jpg')
-    image2 = image2.resize((150, 150), Image.ANTIALIAS)
-    tegla2 = ImageTk.PhotoImage(image2)
-    labelT2 = tk.Label(root, image=tegla2, bg='DarkSeaGreen2')
-    labelT2.place(x=0, y=0)
-
-    oTegla2_1='2. Smeda tegla za cvijece promjera 9 cm'
-    oTegla2=tk.StringVar()
-    oTegla2.set(oTegla2_1)
-    oTegla2L=tk.Label(root,textvariable=oTegla2, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oTegla2L.place(x=180,y=0)
-
-    vlaga2 = random.randrange(30,70)
-    oSenzor1_2_1=f'Senzor Vlage:\t{vlaga2} %'
-    oSenzor1_2=tk.StringVar()
-    oSenzor1_2.set(oSenzor1_2_1)
-    oSenzor1_2L=tk.Label(root,textvariable=oSenzor1_2, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oSenzor1_2L.place(x=185,y=35)
-
-    svjetlost2 = random.randrange(2500,6500)
-    oSenzor2_2_1=f'Senzor Svjetla:\t{svjetlost2} K'
-    oSenzor2_2=tk.StringVar()
-    oSenzor2_2.set(oSenzor2_2_1)
-    oSenzor2_2L=tk.Label(root,textvariable=oSenzor2_2, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oSenzor2_2L.place(x=185,y=70)
-
-    hrana2 = random.randrange(0,100)
-    oSenzor3_2_1=f'Senzor Hrane:\t{hrana2} %'
-    oSenzor3_2=tk.StringVar()
-    oSenzor3_2.set(oSenzor3_2_1)
-    oSenzor3_2L=tk.Label(root,textvariable=oSenzor3_2, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oSenzor3_2L.place(x=185,y=105)
-
-    temperatura2= random.randrange(15,30)
-    oSenzor4_2_1=f'Senzor temperature: {temperatura2} °C'
-    oSenzor4_2=tk.StringVar()
-    oSenzor4_2.set(oSenzor4_2_1)
-    oSenzor4_2L=tk.Label(root,textvariable=oSenzor4_2, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oSenzor4_2L.place(x=185,y=140)
-
-    biljka2 = Image.open(r'Slike\Biljke\Macuhice.jpg')
-    biljka2R = biljka2.resize((90, 90), Image.ANTIALIAS)
-    biljka2N = ImageTk.PhotoImage(biljka2R)
-    labelB2 = tk.Label(root, image=biljka2N, bg='DarkSeaGreen3')
-    labelB2.place(x=760,y=170)
-
-    create_table_query= '''CREATE TABLE IF NOT EXISTS Senzori_Posude_2(
-                                id INTEGER PRIMARY KEY,
-                                dan TEXT NOT NULL,
-                                sat TEXT NOT NULL,
-                                vlaga2 TEXT NOT NULL,
-                                svjetlost2 TEXT NOT NULL,
-                                hrana2 TEXT NOT NULL,
-                                temperatura2 TEXT NOT NULL);'''
-
-    database_name='Povijest senzora_Posuda 2.db'
-
-    try:
-        sqliteConnection=sqlite3.connect(database_name)
-        cursor=sqliteConnection.cursor()
-        print(f'SQLite baza {database_name} je kreirana i spojena')
-        cursor.execute(create_table_query)
-        sqliteConnection.commit()       #commit primjenjuje nas upit
-        print('Tabela vrijednosti senzora dodana u bazu')
-        cursor.close()
-        print('CURSOR otpusten')
-    except sqlite3.Error as error:
-        print('Doslo je do pogreske prilikom spajanja na bazu: ', error)
-    finally:
-        if sqliteConnection:
-            sqliteConnection.close()
-            print('SQLite verzija je zatvorena.')
-
-
-    insert_into_table_query='''INSERT INTO Senzori_Posude_2 ( dan, sat, vlaga2, svjetlost2, hrana2, temperatura2)    
-                                VALUES (?,?,?,?,?,?)'''
-    
-    try:
-        sqliteConnection=sqlite3.connect(database_name)
-        cursor=sqliteConnection.cursor()
-        print(f'SQLite baza {database_name} je kreirana i spojena')
-        cursor.execute(insert_into_table_query, (mojaappdan, mojaappsat, vlaga2, svjetlost2, hrana2, temperatura2))
-        sqliteConnection.commit()
-        cursor.close()
-        print('CURSOR otpusten')
-    except sqlite3.Error as error:
-        print('Doslo je do pogreske prilikom spajanja na bazu: ', error)
-    finally:
-        if sqliteConnection:
-            sqliteConnection.close()
-            print('SQLite verzija je zatvorena.')
-
-    pocetnaButton=Button(root, text="Pocetna stranica",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_app).place(x=750, y=10)
-    mojProfilButton=Button(root, text="Moj profil",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_profil).place(x=750, y=40)
-    biljkeButton=Button(root, text="Biljke",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_biljke).place(x=750, y=70)
-    posudeButton=Button(root, text="Posude",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_posude).place(x=750, y=100)
-    cancelButton=Button(root, text="Izlaz",width=15, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=quit).place(x=750, y=130)
-
-    root.mainloop()
-
-def open_detaljiT3():
-    clearRoot(root)
-    root.title(f'PyFloraPosuda - Posude')
-    root['bg'] = 'DarkSeaGreen2'
-    root.geometry('900x500')
-
-    image3 = Image.open(r'Slike\Posude\Promjer27cm.jpg')
-    image3 = image3.resize((150, 150), Image.ANTIALIAS)
-    tegla3 = ImageTk.PhotoImage(image3)
-    labelT3 = tk.Label(root, image=tegla3, bg='DarkSeaGreen2')
-    labelT3.place(x=0, y=0)
-
-    oTegla3_1='3. Bijela tegla za cvijece promjera 27 cm'
-    oTegla3=tk.StringVar()
-    oTegla3.set(oTegla3_1)
-    oTegla3L=tk.Label(root,textvariable=oTegla3, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oTegla3L.place(x=180,y=0)
-
-    vlaga3 = random.randrange(30,70)
-    oSenzor1_3_1=f'Senzor Vlage:\t{vlaga3} %'
-    oSenzor1_3=tk.StringVar()
-    oSenzor1_3.set(oSenzor1_3_1)
-    oSenzor1_3L=tk.Label(root,textvariable=oSenzor1_3, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oSenzor1_3L.place(x=185,y=35)
-
-    svjetlost3 = random.randrange(2500,6500)
-    oSenzor2_3_1=f'Senzor Svjetla:\t{svjetlost3} K'
-    oSenzor2_3=tk.StringVar()
-    oSenzor2_3.set(oSenzor2_3_1)
-    oSenzor2_3L=tk.Label(root,textvariable=oSenzor2_3, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oSenzor2_3L.place(x=185,y=70)
-
-    hrana3 = random.randrange(0,100)
-    oSenzor3_3_1=f'Senzor Hrane:\t{hrana3} %'
-    oSenzor3_3=tk.StringVar()
-    oSenzor3_3.set(oSenzor3_3_1)
-    oSenzor3_3L=tk.Label(root,textvariable=oSenzor3_3, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oSenzor3_3L.place(x=185,y=105)
-
-    temperatura3= random.randrange(15,30)
-    oSenzor4_3_1=f'Senzor temperature: {temperatura3} °C'
-    oSenzor4_3=tk.StringVar()
-    oSenzor4_3.set(oSenzor4_3_1)
-    oSenzor4_3L=tk.Label(root,textvariable=oSenzor4_3, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oSenzor4_3L.place(x=185,y=140)
-
-    biljka3 = Image.open(r'Slike\Biljke\Kaktus.webp')
-    biljka3R = biljka3.resize((90, 90), Image.ANTIALIAS)
-    biljka3N = ImageTk.PhotoImage(biljka3R)
-    labelB3 = tk.Label(root, image=biljka3N, bg='DarkSeaGreen3')
-    labelB3.place(x=760,y=170)
-
-    create_table_query= '''CREATE TABLE IF NOT EXISTS Senzori_Posude_3 (
-                                id INTEGER PRIMARY KEY,
-                                dan TEXT NOT NULL,
-                                sat TEXT NOT NULL,
-                                vlaga3 TEXT NOT NULL,
-                                svjetlost3 TEXT NOT NULL,
-                                hrana3 TEXT NOT NULL,
-                                temperatura3 TEXT NOT NULL);'''
-
-    database_name='Povijest senzora_Posuda 3.db'
-
-    try:
-        sqliteConnection=sqlite3.connect(database_name)
-        cursor=sqliteConnection.cursor()
-        print(f'SQLite baza {database_name} je kreirana i spojena')
-        cursor.execute(create_table_query)
-        sqliteConnection.commit()       #commit primjenjuje nas upit
-        print('Tabela vrijednosti senzora dodana u bazu')
-        cursor.close()
-        print('CURSOR otpusten')
-    except sqlite3.Error as error:
-        print('Doslo je do pogreske prilikom spajanja na bazu: ', error)
-    finally:
-        if sqliteConnection:
-            sqliteConnection.close()
-            print('SQLite verzija je zatvorena.')
-
-    insert_into_table_query='''INSERT INTO Senzori_Posude_3 ( dan, sat, vlaga3, svjetlost3, hrana3, temperatura3)    
-                                VALUES (?,?,?,?,?,?)'''
-    
-    try:
-        sqliteConnection=sqlite3.connect(database_name)
-        cursor=sqliteConnection.cursor()
-        print(f'SQLite baza {database_name} je kreirana i spojena')
-        cursor.execute(insert_into_table_query, (mojaappdan, mojaappsat, vlaga3, svjetlost3, hrana3, temperatura3))
-        sqliteConnection.commit()
-        cursor.close()
-        print('CURSOR otpusten')
-    except sqlite3.Error as error:
-        print('Doslo je do pogreske prilikom spajanja na bazu: ', error)
-    finally:
-        if sqliteConnection:
-            sqliteConnection.close()
-            print('SQLite verzija je zatvorena.')
-
-    pocetnaButton=Button(root, text="Pocetna stranica",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_app).place(x=750, y=10)
-    mojProfilButton=Button(root, text="Moj profil",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_profil).place(x=750, y=40)
-    biljkeButton=Button(root, text="Biljke",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_biljke).place(x=750, y=70)
-    posudeButton=Button(root, text="Posude",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_posude).place(x=750, y=100)
-    cancelButton=Button(root, text="Izlaz",width=15, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=quit).place(x=750, y=130)
-
-    root.mainloop()
-
-def open_detaljiT4():
-    clearRoot(root)
-    root.title(f'PyFloraPosuda - Posude')
-    root['bg'] = 'DarkSeaGreen2'
-    root.geometry('900x500')
-
-    image4 = Image.open(r'Slike\Posude\Promjer40cm.jpg')
-    image4 = image4.resize((150, 150), Image.ANTIALIAS)
-    tegla4 = ImageTk.PhotoImage(image4)
-    labelT4 = tk.Label(root, image=tegla4, bg='DarkSeaGreen2')
-    labelT4.place(x=0, y=0)
-
-    oTegla4_1='4. Crna tegla za cvijece promjera 40 cm'
-    oTegla4=tk.StringVar()
-    oTegla4.set(oTegla4_1)
-    oTegla4L=tk.Label(root,textvariable=oTegla4, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oTegla4L.place(x=180,y=0)
-
-    vlaga4 = random.randrange(30,70)
-    oSenzor1_4_1=f'Senzor Vlage:\t{vlaga4} %'
-    oSenzor1_4=tk.StringVar()
-    oSenzor1_4.set(oSenzor1_4_1)
-    oSenzor1_4L=tk.Label(root,textvariable=oSenzor1_4, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oSenzor1_4L.place(x=185,y=35)
-
-    svjetlost4 = random.randrange(2500,6500)
-    oSenzor2_4_1=f'Senzor Svjetla:\t{svjetlost4} K'
-    oSenzor2_4=tk.StringVar()
-    oSenzor2_4.set(oSenzor2_4_1)
-    oSenzor2_4L=tk.Label(root,textvariable=oSenzor2_4, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oSenzor2_4L.place(x=185,y=70)
-
-    hrana4 = random.randrange(0,100)
-    oSenzor3_4_1=f'Senzor Hrane:\t{hrana4} %'
-    oSenzor3_4=tk.StringVar()
-    oSenzor3_4.set(oSenzor3_4_1)
-    oSenzor3_4L=tk.Label(root,textvariable=oSenzor3_4, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oSenzor3_4L.place(x=185,y=105)
-
-    temperatura4= random.randrange(15,30)
-    oSenzor4_4_1=f'Senzor temperature: {temperatura4} °C'
-    oSenzor4_4=tk.StringVar()
-    oSenzor4_4.set(oSenzor4_4_1)
-    oSenzor4_4L=tk.Label(root,textvariable=oSenzor4_4, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oSenzor4_4L.place(x=185,y=140)
-
-    biljka4 = Image.open(r'Slike\Biljke\FikusBenjamin.jpg')
-    biljka4R = biljka4.resize((90, 90), Image.ANTIALIAS)
-    biljka4N = ImageTk.PhotoImage(biljka4R)
-    labelB4 = tk.Label(root, image=biljka4N, bg='DarkSeaGreen3')
-    labelB4.place(x=760,y=170)
-
-    create_table_query= '''CREATE TABLE IF NOT EXISTS Senzori_Posude_4(
-                                id INTEGER PRIMARY KEY,
-                                dan TEXT NOT NULL,
-                                sat TEXT NOT NULL,
-                                vlaga4 TEXT NOT NULL,
-                                svjetlost4 TEXT NOT NULL,
-                                hrana4 TEXT NOT NULL,
-                                temperatura4 TEXT NOT NULL);'''
-
-    database_name='Povijest senzora_Posuda 4.db'
-
-    try:
-        sqliteConnection=sqlite3.connect(database_name)
-        cursor=sqliteConnection.cursor()
-        print(f'SQLite baza {database_name} je kreirana i spojena')
-        cursor.execute(create_table_query)
-        sqliteConnection.commit()       #commit primjenjuje nas upit
-        print('Tabela vrijednosti senzora dodana u bazu')
-        cursor.close()
-        print('CURSOR otpusten')
-    except sqlite3.Error as error:
-        print('Doslo je do pogreske prilikom spajanja na bazu: ', error)
-    finally:
-        if sqliteConnection:
-            sqliteConnection.close()
-            print('SQLite verzija je zatvorena.')
-
-    insert_into_table_query='''INSERT INTO Senzori_Posude_4 ( dan, sat, vlaga4, svjetlost4, hrana4, temperatura4)    
-                                VALUES (?,?,?,?,?,?)'''
-    
-    try:
-        sqliteConnection=sqlite3.connect(database_name)
-        cursor=sqliteConnection.cursor()
-        print(f'SQLite baza {database_name} je kreirana i spojena')
-        cursor.execute(insert_into_table_query, (mojaappdan, mojaappsat, vlaga4, svjetlost4, hrana4, temperatura4))
-        sqliteConnection.commit()
-        cursor.close()
-        print('CURSOR otpusten')
-    except sqlite3.Error as error:
-        print('Doslo je do pogreske prilikom spajanja na bazu: ', error)
-    finally:
-        if sqliteConnection:
-            sqliteConnection.close()
-            print('SQLite verzija je zatvorena.')
-
-    pocetnaButton=Button(root, text="Pocetna stranica",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_app).place(x=750, y=10)
-    mojProfilButton=Button(root, text="Moj profil",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_profil).place(x=750, y=40)
-    biljkeButton=Button(root, text="Biljke",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_biljke).place(x=750, y=70)
-    posudeButton=Button(root, text="Posude",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_posude).place(x=750, y=100)
-    cancelButton=Button(root, text="Izlaz",width=15, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=quit).place(x=750, y=130)
-
-    root.mainloop()
     
 ###################### BOTUNI DODAVANJA BILJKE ##############
 def dodaj_sliku():
     global file_path
     file_path = filedialog.askopenfilename()
     
-
-
 def dodaj_posudu():
     quit
 
@@ -756,6 +437,12 @@ def dodaj_biljku():
     dodajPosuduButton=Button(root, text="Dodaj posudu",width=10, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=dodaj_posudu).place(x=110, y=380)
     spremiButton=Button(root, text="Spremi",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command= lambda:[switchClicked(), spremi(unosidBiljke, unosimeBiljke, unospolozajBiljke, unosmintemp, unosmaxtemp, unosminVlaznost, unosmaxVlaznost, unosminSvjetlost, unosmaxSvjetlost, unosminHrana, unosmaxHrana, file_path) ]).place(x=200, y=380)
     
+    biljka = Image.open(file_path)
+    biljkaR = biljka.resize((100, 100), Image.ANTIALIAS)
+    biljkaN = ImageTk.PhotoImage(biljkaR)
+    label = tk.Label(root, image=biljkaN, bg='DarkSeaGreen2')
+    label.place(x=220,y=40)
+
     # frame = tk.Frame(root, bg='DarkSeaGreen3', width=350, height=150)
     # frame.place(x=10, y=10)
 
@@ -843,87 +530,7 @@ def open_posude():
     oTegla1L.place(x=150,y=0)
 
     detaljiT1Button=Button(frame1, text="Detalji",width=7, font=('Helvetica bold',6), justify='right',bg='DarkSeaGreen2', command=open_detaljiT1)
-    detaljiT1Button.place(x=300, y=130)
-     
-    ########################  FRAME 2  ###################
-    frame2 = tk.Frame(root, bg='DarkSeaGreen2', width=350, height=150)
-    frame2.grid(row=0, column=1, padx=5, pady=5, sticky='nsew')
-
-    image2 = Image.open(r'Slike\Posude\Promjer9cm.jpg')
-    image2 = image2.resize((150, 150), Image.ANTIALIAS)
-    tegla2 = ImageTk.PhotoImage(image2)
-    labelT2 = tk.Label(frame2, image=tegla2, bg='DarkSeaGreen2')
-    labelT2.place(x=0, y=0)
-
-    biljka2 = Image.open(r'Slike\Biljke\Macuhice.jpg')
-    biljka2R = biljka2.resize((70, 70), Image.ANTIALIAS)
-    biljka2N = ImageTk.PhotoImage(biljka2R)
-    labelB2 = tk.Label(frame2, image=biljka2N, bg='DarkSeaGreen2')
-    labelB2.place(x=190,y=60)
-
-    oTegla2_1='2. Posuda je smeda tegla za cvijece \n promjera 9 cm.\n U njoj je posadena Macuhica:'
-    oTegla2=tk.StringVar()
-    oTegla2.set(oTegla2_1)
-    oTegla2L=tk.Label(frame2,textvariable=oTegla2, font=('Segoe UI',10), bg='DarkSeaGreen2', justify='left')
-    oTegla2L.place(x=150,y=0)
-
-    detaljiT2Button=Button(frame2, text="Detalji",width=7, font=('Helvetica bold',6), justify='right',bg='DarkSeaGreen2', command=open_detaljiT2)
-    detaljiT2Button.place(x=300, y=130)
-
-    ######################  FRAME 3  ######################
-    frame3 = tk.Frame(root, bg='DarkSeaGreen2', width=350, height=150)
-    frame3.grid(row=1, column=0, padx=5, pady=5, sticky='nsew')
-
-    image3 = Image.open(r'Slike\Posude\Promjer27cm.jpg')
-    image3 = image3.resize((150, 150), Image.ANTIALIAS)
-    tegla3 = ImageTk.PhotoImage(image3)
-    labelT3 = tk.Label(frame3, image=tegla3, bg='DarkSeaGreen2')
-    labelT3.place(x=0, y=0)
-
-    biljka3 = Image.open(r'Slike\Biljke\Kaktus.webp')
-    biljka3R = biljka3.resize((70, 70), Image.ANTIALIAS)
-    biljka3N = ImageTk.PhotoImage(biljka3R)
-    labelB3 = tk.Label(frame3, image=biljka3N, bg='DarkSeaGreen2')
-    labelB3.place(x=190,y=60)
-
-    oTegla3_1='3. Posuda je bijela tegla za cvijece \n promjera 27 cm.\n U njoj je posaden Kaktus:'
-    oTegla3=tk.StringVar()
-    oTegla3.set(oTegla3_1)
-    oTegla3L=tk.Label(frame3,textvariable=oTegla3, font=('Segoe UI',10), bg='DarkSeaGreen2', justify='left')
-    oTegla3L.place(x=150,y=0)
-
-    detaljiT3Button=Button(frame3, text="Detalji",width=7, font=('Helvetica bold',6), justify='right',bg='DarkSeaGreen2', command=open_detaljiT3)
-    detaljiT3Button.place(x=300, y=130)
-
-    ######################  FRAME 4  ######################
-    frame4 = tk.Frame(root, bg='DarkSeaGreen2', width=350, height=150)
-    frame4.grid(row=1, column=1, padx=5, pady=5, sticky='nsew')
-
-    image4 = Image.open(r'Slike\Posude\Promjer40cm.jpg')
-    image4 = image4.resize((150, 150), Image.ANTIALIAS)
-    tegla4 = ImageTk.PhotoImage(image4)
-    labelT4 = tk.Label(frame4, image=tegla4, bg='DarkSeaGreen2')
-    labelT4.place(x=0, y=0)
-
-    biljka4 = Image.open(r'Slike\Biljke\FikusBenjamin.jpg')
-    biljka4R = biljka4.resize((70, 70), Image.ANTIALIAS)
-    biljka4N = ImageTk.PhotoImage(biljka4R)
-    labelB4 = tk.Label(frame4, image=biljka4N, bg='DarkSeaGreen2')
-    labelB4.place(x=190,y=60)
-
-    oTegla4_1='4. Posuda je crna tegla za cvijece \n promjera 40 cm.\n U njoj je posaden Fikus Benjamin:'
-    oTegla4=tk.StringVar()
-    oTegla4.set(oTegla4_1)
-    oTegla4L=tk.Label(frame4,textvariable=oTegla4, font=('Segoe UI',10), bg='DarkSeaGreen2', justify='left')
-    oTegla4L.place(x=150,y=0)
-
-    detaljiT4Button=Button(frame4, text="Detalji",width=7, font=('Helvetica bold',6), justify='right',bg='DarkSeaGreen2', command=open_detaljiT4)
-    detaljiT4Button.place(x=300, y=130)
-
-    pocetnaButton=Button(root, text="Pocetna stranica",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_app).place(x=750, y=10)
-    mojProfilButton=Button(root, text="Moj profil",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_profil).place(x=750, y=40)
-    biljkeButton=Button(root, text="Biljke",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_biljke).place(x=750, y=70)
-    cancelButton=Button(root, text="Izlaz",width=15, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=quit).place(x=750, y=100)
+    detaljiT1Button.place(x=300, y=130)     
 
     root.mainloop()
 
