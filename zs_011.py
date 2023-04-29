@@ -452,7 +452,7 @@ def dodaj_biljku():
 
     dodajSlikuButton=Button(root, text="Dodaj sliku",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=dodaj_sliku).place(x=20, y=380)
     dodajPosuduButton=Button(root, text="Dodaj posudu",width=10, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=dodaj_posudu).place(x=110, y=380)
-    spremiButton=Button(root, text="Spremi",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command= lambda:[switchClicked(), spremi(unosidBiljke, unosimeBiljke, unospolozajBiljke, unosmintemp, unosmaxtemp, unosminVlaznost, unosmaxVlaznost, unosminSvjetlost, unosmaxSvjetlost, unosminHrana, unosmaxHrana, file_path) ]).place(x=200, y=380)
+    spremiButton=Button(root, text="Spremi",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command= lambda:[switchClicked(), spremi(unosimeBiljke, unospolozajBiljke, unosmintemp, unosmaxtemp, unosminVlaznost, unosmaxVlaznost, unosminSvjetlost, unosmaxSvjetlost, unosminHrana, unosmaxHrana, file_path) ]).place(x=200, y=380)
  
     # frame = tk.Frame(root, bg='DarkSeaGreen3', width=350, height=150)
     # frame.place(x=10, y=10)
@@ -466,6 +466,56 @@ def dodaj_biljku():
     root.mainloop()
 
 #########################################  BUTTON BILJKE   ##################################
+class PlantCard(tk.Frame):
+    def __init__(self, parent, plantId, tk_instance):
+        self.photo = None
+        self.tk_instance = tk_instance
+        super().__init__(parent, bg="white", highlightbackground="gray", highlightthickness=1)
+        self.plantId = plantId
+        self.load_plant_data()
+        self.create_widgets()
+
+    def create_widgets(self):
+        # Plant image
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
+        self.rowconfigure(0, weight=1)
+        self.rowconfigure(1, weight=1)
+
+        photo = ImageTk.PhotoImage(self.photo)  # Convert to PhotoImage
+        self.image_label = tk.Label(self, image=photo, bg="white")
+        self.image_label.image = photo  # Save a reference to the PhotoImage to avoid garbage collection
+        self.image_label.grid(row=0, column=0, rowspan=2, padx=10, pady=10)
+
+
+
+    def load_plant_data(self):
+        # Retrieve plant data from the database using plantId
+        conn = sqlite3.connect('Baza_podataka.db')
+        c = conn.cursor()
+        c.execute("SELECT * FROM Biljke WHERE id=?", (self.plantId,))
+        plant_data = c.fetchone()
+        conn.close()
+
+        # Set attributes for plant data
+        self.plant_name = plant_data[1]
+        self.polozaj = plant_data[2]
+        self.min_temp = plant_data[3]
+        self.max_temp = plant_data[4]
+        self.min_vlaznost = plant_data[5]
+        self.max_vlaznost = plant_data[6]
+        self.min_svjetlost = plant_data[7]
+        self.max_svjetlost = plant_data[8]
+        self.min_hrana = plant_data[9]
+        self.max_hrana = plant_data[10]
+        self.photo_image = plant_data[11]
+        with open(self.photo_image, 'rb') as file:
+            contents = file.read()
+        self.photo = Image.open(io.BytesIO(contents))
+
+
+
+
 def open_biljke():
     clearRoot(root)
     root.title(f'PyFloraPosuda - Biljke')
@@ -473,6 +523,23 @@ def open_biljke():
     root.geometry('900x500')
     
     dodajButton=Button(root, text="Dodaj biljku",width=15, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=dodaj_biljku).place(x=750, y=150)
+
+    # Connect to the database
+    conn = sqlite3.connect('Baza_podataka.db')
+    # Create a cursor object
+    cursor = conn.cursor()
+    # Execute a query to select all data from the "biljke" table
+    cursor.execute("SELECT id FROM Biljke")
+
+    # fetch all the results
+    plant_ids = cursor.fetchall()
+
+    # create and display PlantCard instances for each plant_id
+    for id in plant_ids:
+        plant_card = PlantCard(root, id[0], tk_instance=root)
+        plant_card.pack(side="top", fill="both", expand=True)
+
+
     # ############ Frame 1 ############
     # frame1 = tk.Frame(root, bg='DarkSeaGreen2', width=350, height=150)
     # frame1.grid(row=0, column=0, padx=5, pady=5, sticky='nsew')
