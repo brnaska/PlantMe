@@ -12,6 +12,14 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 from matplotlib import pyplot as plt
 import numpy as np
+spremiClicked = False
+
+def switchClicked():
+    global spremiClicked
+    if(spremiClicked == True):
+        spremiClicked = False
+    else:
+        spremiClicked = True
 
 now=datetime.now()
 mojaappdan=now.strftime("%d.%m.%Y.")
@@ -801,56 +809,14 @@ def dodaj_sliku():
 def dodaj_posudu():
     quit
 
-
-####################### DODAJ BILJKU ##################
-def dodaj_biljku():
-    spremi = []
-    clearRoot(root)
-    root.title(f'PyFloraPosuda - Dodaj Biljku')
-    root['bg'] = 'DarkSeaGreen2'
-    root.geometry('900x500')
-
-    idBiljke=tk.Label(root,text="ID biljke", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=30)
-    unosidBiljke = Entry(root,show="",width=20, font=('Calibri', 15)).place(x=150, y=30)
-    imeBiljke=tk.Label(root,text="Ime biljke", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=70)
-    unosimeBiljke = Entry(root,show="",width=20, font=('Calibri', 15)).place(x=150, y=70)
-    polozajBiljke=tk.Label(root,text="Polozaj u kuci", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=110)
-    unospolozajBiljke = Entry(root,show="",width=20, font=('Calibri', 15)).place(x=150, y=110)
-    odrzavanjeBiljke=tk.Label(root,text="Odrzavanje:", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=150)
-    minTemp=tk.Label(root,text="Min. temp.°C", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=190)
-    unosmintemp = Entry(root,show="",width=7, font=('Calibri', 15)).place(x=170, y=190)
-    maxTemp=tk.Label(root,text="Max. temp.°C", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=250, y=190)
-    unosmaxtemp = Entry(root,show="",width=7, font=('Calibri', 15)).place(x=390, y=190)
-    minVlaznost=tk.Label(root,text="Min. vlaznost %", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=230)
-    unosminVlaznost = Entry(root,show="",width=7, font=('Calibri', 15)).place(x=170, y=230)
-    maxVlaznost=tk.Label(root,text="Max. vlaznost %", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=250, y=230)
-    unosmaxVlaznost = Entry(root,show="",width=7, font=('Calibri', 15)).place(x=390, y=230)
-    minSvjetlost=tk.Label(root,text="Min. svjetlost K", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=270)
-    unosminSvjetlost = Entry(root,show="",width=7, font=('Calibri', 15)).place(x=170, y=270)
-    maxSvjetlost=tk.Label(root,text="Max. svjetlost K", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=250, y=270)
-    unosmaxSvjetlost = Entry(root,show="",width=7, font=('Calibri', 15)).place(x=390, y=270)
-    minHrana=tk.Label(root,text="Min. ishrana %", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=310)
-    unosminHrana = Entry(root,show="",width=7, font=('Calibri', 15)).place(x=170, y=310)
-    maxHrana=tk.Label(root,text="Max. ishrana %", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=250, y=310)
-    unosmaxHrana = Entry(root,show="",width=7, font=('Calibri', 15)).place(x=390, y=310)
-
-    dodajSlikuButton=Button(root, text="Dodaj sliku",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=dodaj_sliku).place(x=20, y=380)
-    dodajPosuduButton=Button(root, text="Dodaj posudu",width=10, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=dodaj_posudu).place(x=110, y=380)
-    spremiButton=Button(root, text="Spremi",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=spremi).place(x=200, y=380)
-    
-    # frame = tk.Frame(root, bg='DarkSeaGreen3', width=350, height=150)
-    # frame.place(x=10, y=10)
-
-    pocetnaButton=Button(root, text="Pocetna stranica",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_app).place(x=750, y=10)
-    mojProfilButton=Button(root, text="Moj profil",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_profil).place(x=750, y=40)
-    posudeButton=Button(root, text="Posude",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_posude).place(x=750, y=70)
-    cancelButton=Button(root, text="Izlaz",width=15, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=quit).place(x=750, y=100)
-
-    def spremi():
-        unosidBiljke_db = unosidBiljke.get()
+def spremi(unosidBiljke, unosimeBiljke, unospolozajBiljke, unosmintemp, unosmaxtemp, unosminVlaznost, unosmaxVlaznost, unosminSvjetlost, unosmaxSvjetlost, unosminHrana, unosmaxHrana):
+    global spremiClicked
+    if(spremiClicked == True):
+        spremiClicked = True
         unosimeBiljke_db = unosimeBiljke.get()
         unospolozajBiljke_db = unospolozajBiljke.get()
         unosmintemp_db = unosmintemp.get()
+        unosidBiljke_db = unosidBiljke.get()
         unosmaxtemp_db = unosmaxtemp.get()
         unosminVlaznost_db = unosminVlaznost.get()
         unosmaxVlaznost_db = unosmaxVlaznost.get()
@@ -860,19 +826,18 @@ def dodaj_biljku():
         unosmaxHrana_db = unosmaxHrana.get()
         create_table_query= '''CREATE TABLE IF NOT EXISTS Biljke(
                                     id INTEGER PRIMARY KEY,
-                                    id_biljke INTEGER NOT NULL DEFAULT 0,
-                                    naziv_biljke TEXT NOT NULL,
-                                    polozaj_Biljke TEXT NOT NULL,
-                                    min_temp TEXT NOT NULL,
-                                    max_temp TEXT NOT NULL,
-                                    min_Vlaznost TEXT NOT NULL,
-                                    max_Vlaznost TEXT NOT NULL,
-                                    min_Svjetlost TEXT NOT NULL,
-                                    max_Svjetlost TEXT NOT NULL,
-                                    min_Hrana TEXT NOT NULL,
-                                    max_Hrana TEXT NOT NULL);'''
-
-        database_name='Baza podataka.db'
+                                    unosidBiljke_db INTEGER NOT NULL DEFAULT 0,
+                                    unosimeBiljke_db TEXT NOT NULL,
+                                    unospolozajBiljke_db TEXT NOT NULL,
+                                    unosmintemp_db TEXT NOT NULL,
+                                    unosmaxtemp_db TEXT NOT NULL,
+                                    unosminVlaznost_db TEXT NOT NULL,
+                                    unosmaxVlaznost_db TEXT NOT NULL,
+                                    unosminSvjetlost_db TEXT NOT NULL,
+                                    unosmaxSvjetlost_db TEXT NOT NULL,
+                                    unosminHrana_db TEXT NOT NULL,
+                                    unosmaxHrana_db TEXT NOT NULL);'''
+        database_name='Baza_podataka.db'
 
         try:
             sqliteConnection=sqlite3.connect(database_name)
@@ -891,8 +856,8 @@ def dodaj_biljku():
                 print('SQLite verzija je zatvorena.')
 
         insert_into_table_query='''INSERT INTO Biljke (unosidBiljke_db, unosimeBiljke_db, unospolozajBiljke_db, unosmintemp_db, unosmaxtemp_db, unosminVlaznost_db, unosmaxVlaznost_db, unosminSvjetlost_db, unosmaxSvjetlost_db, unosminHrana_db, unosmaxHrana_db)    
-                                    VALUES (?,?,?,?,?,?,?,?,?,?)'''
-        
+                                    VALUES (?,?,?,?,?,?,?,?,?,?,?)'''
+            
         try:
             sqliteConnection=sqlite3.connect(database_name)
             cursor=sqliteConnection.cursor()
@@ -907,7 +872,63 @@ def dodaj_biljku():
             if sqliteConnection:
                 sqliteConnection.close()
                 print('SQLite verzija je zatvorena.')
+        switchClicked()
+####################### DODAJ BILJKU ##################
+def dodaj_biljku():
+    global spremiClicked
+    spremi_list = []
+    clearRoot(root)
+    root.title(f'PyFloraPosuda - Dodaj Biljku')
+    root['bg'] = 'DarkSeaGreen2'
+    root.geometry('900x500')
+
+    idBiljke=tk.Label(root,text="ID biljke", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=30)
+    unosidBiljke = Entry(root,show="",width=20, font=('Calibri', 15))
+    unosidBiljke.place(x=150, y=30)
+    imeBiljke=tk.Label(root,text="Ime biljke", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=70)
+    unosimeBiljke = Entry(root,show="",width=20, font=('Calibri', 15))
+    unosimeBiljke.place(x=150, y=70)
+    polozajBiljke=tk.Label(root,text="Polozaj u kuci", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=110)
+    unospolozajBiljke = Entry(root,show="",width=20, font=('Calibri', 15))
+    unospolozajBiljke.place(x=150, y=110)
+    odrzavanjeBiljke=tk.Label(root,text="Odrzavanje:", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=150)
+    minTemp=tk.Label(root,text="Min. temp.°C", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=190)
+    unosmintemp = Entry(root,show="",width=7, font=('Calibri', 15))
+    unosmintemp.place(x=170, y=190)
+    maxTemp=tk.Label(root,text="Max. temp.°C", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=250, y=190)
+    unosmaxtemp = Entry(root,show="",width=7, font=('Calibri', 15))
+    unosmaxtemp.place(x=390, y=190)
+    minVlaznost=tk.Label(root,text="Min. vlaznost %", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=230)
+    unosminVlaznost = Entry(root,show="",width=7, font=('Calibri', 15))
+    unosminVlaznost.place(x=170, y=230)
+    maxVlaznost=tk.Label(root,text="Max. vlaznost %", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=250, y=230)
+    unosmaxVlaznost = Entry(root,show="",width=7, font=('Calibri', 15))
+    unosmaxVlaznost.place(x=390, y=230)
+    minSvjetlost=tk.Label(root,text="Min. svjetlost K", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=270)
+    unosminSvjetlost = Entry(root,show="",width=7, font=('Calibri', 15))
+    unosminSvjetlost.place(x=170, y=270)
+    maxSvjetlost=tk.Label(root,text="Max. svjetlost K", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=250, y=270)
+    unosmaxSvjetlost = Entry(root,show="",width=7, font=('Calibri', 15))
+    unosmaxSvjetlost.place(x=390, y=270)
+    minHrana=tk.Label(root,text="Min. ishrana %", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=310)
+    unosminHrana = Entry(root,show="",width=7, font=('Calibri', 15))
+    unosminHrana.place(x=170, y=310)
+    maxHrana=tk.Label(root,text="Max. ishrana %", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=250, y=310)
+    unosmaxHrana = Entry(root,show="",width=7, font=('Calibri', 15))
+    unosmaxHrana.place(x=390, y=310)
+
+    dodajSlikuButton=Button(root, text="Dodaj sliku",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=dodaj_sliku).place(x=20, y=380)
+    dodajPosuduButton=Button(root, text="Dodaj posudu",width=10, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=dodaj_posudu).place(x=110, y=380)
+    spremiButton=Button(root, text="Spremi",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command= lambda:[switchClicked(), spremi(unosidBiljke, unosimeBiljke, unospolozajBiljke, unosmintemp, unosmaxtemp, unosminVlaznost, unosmaxVlaznost, unosminSvjetlost, unosmaxSvjetlost, unosminHrana, unosmaxHrana) ]).place(x=200, y=380)
     
+    # frame = tk.Frame(root, bg='DarkSeaGreen3', width=350, height=150)
+    # frame.place(x=10, y=10)
+
+    pocetnaButton=Button(root, text="Pocetna stranica",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_app).place(x=750, y=10)
+    mojProfilButton=Button(root, text="Moj profil",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_profil).place(x=750, y=40)
+    posudeButton=Button(root, text="Posude",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_posude).place(x=750, y=70)
+    cancelButton=Button(root, text="Izlaz",width=15, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=quit).place(x=750, y=100)
+
     root.mainloop()
 
 #########################################  BUTTON BILJKE   ##################################
