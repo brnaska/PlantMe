@@ -332,7 +332,7 @@ def dodaj_sliku():
                 biljkaN = ImageTk.PhotoImage(biljkaR)
                 label = tk.Label(root, image=biljkaN, bg='DarkSeaGreen2')
                 label.image = biljkaN
-                label.place(x=450, y=30)
+                label.place(x=500, y=30)
                 label.config(image=biljkaN)
                 dodajSlikuClicked = False
         except FileNotFoundError:
@@ -342,13 +342,12 @@ def dodaj_sliku():
 def dodaj_posudu():
     quit
 
-def spremi(unosidBiljke, unosimeBiljke, unospolozajBiljke, unosmintemp, unosmaxtemp, unosminVlaznost, unosmaxVlaznost, unosminSvjetlost, unosmaxSvjetlost, unosminHrana, unosmaxHrana, file_path):
+def spremi(unosimeBiljke, unospolozajBiljke, unosmintemp, unosmaxtemp, unosminVlaznost, unosmaxVlaznost, unosminSvjetlost, unosmaxSvjetlost, unosminHrana, unosmaxHrana, file_path):
     global spremiClicked
     if(spremiClicked == True):
         unosimeBiljke_db = unosimeBiljke.get()
         unospolozajBiljke_db = unospolozajBiljke.get()
         unosmintemp_db = unosmintemp.get()
-        unosidBiljke_db = unosidBiljke.get()
         unosmaxtemp_db = unosmaxtemp.get()
         unosminVlaznost_db = unosminVlaznost.get()
         unosmaxVlaznost_db = unosmaxVlaznost.get()
@@ -358,7 +357,6 @@ def spremi(unosidBiljke, unosimeBiljke, unospolozajBiljke, unosmintemp, unosmaxt
         unosmaxHrana_db = unosmaxHrana.get()
         create_table_query= '''CREATE TABLE IF NOT EXISTS Biljke(
                                     id INTEGER PRIMARY KEY,
-                                    unosidBiljke_db INTEGER NOT NULL DEFAULT 0,
                                     unosimeBiljke_db TEXT NOT NULL,
                                     unospolozajBiljke_db TEXT NOT NULL,
                                     unosmintemp_db INTEGER NOT NULL,
@@ -388,14 +386,14 @@ def spremi(unosidBiljke, unosimeBiljke, unospolozajBiljke, unosmintemp, unosmaxt
                 sqliteConnection.close()
                 print('SQLite verzija je zatvorena.')
 
-        insert_into_table_query='''INSERT INTO Biljke (unosidBiljke_db, unosimeBiljke_db, unospolozajBiljke_db, unosmintemp_db, unosmaxtemp_db, unosminVlaznost_db, unosmaxVlaznost_db, unosminSvjetlost_db, unosmaxSvjetlost_db, unosminHrana_db, unosmaxHrana_db, file_path)    
-                                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?)'''
+        insert_into_table_query='''INSERT INTO Biljke (unosimeBiljke_db, unospolozajBiljke_db, unosmintemp_db, unosmaxtemp_db, unosminVlaznost_db, unosmaxVlaznost_db, unosminSvjetlost_db, unosmaxSvjetlost_db, unosminHrana_db, unosmaxHrana_db, file_path)    
+                                    VALUES (?,?,?,?,?,?,?,?,?,?,?)'''
             
         try:
             sqliteConnection=sqlite3.connect(database_name)
             cursor=sqliteConnection.cursor()
             print(f'SQLite baza {database_name} je kreirana i spojena')
-            cursor.execute(insert_into_table_query, (unosidBiljke_db, unosimeBiljke_db, unospolozajBiljke_db, unosmintemp_db, unosmaxtemp_db, unosminVlaznost_db, unosmaxVlaznost_db, unosminSvjetlost_db, unosmaxSvjetlost_db, unosminHrana_db, unosmaxHrana_db, file_path))
+            cursor.execute(insert_into_table_query, (unosimeBiljke_db, unospolozajBiljke_db, unosmintemp_db, unosmaxtemp_db, unosminVlaznost_db, unosmaxVlaznost_db, unosminSvjetlost_db, unosmaxSvjetlost_db, unosminHrana_db, unosmaxHrana_db, file_path))
             sqliteConnection.commit()
             cursor.close()
             print('CURSOR otpusten')
@@ -417,9 +415,7 @@ def dodaj_biljku():
     root['bg'] = 'DarkSeaGreen2'
     root.geometry('900x500')
 
-    idBiljke=tk.Label(root,text="ID biljke", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=30)
-    unosidBiljke = Entry(root,show="",width=20, font=('Calibri', 15))
-    unosidBiljke.place(x=150, y=30)
+    naslovBiljke=tk.Label(root,text="Unos nove biljke", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=145, y=20)
     imeBiljke=tk.Label(root,text="Ime biljke", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=70)
     unosimeBiljke = Entry(root,show="",width=20, font=('Calibri', 15))
     unosimeBiljke.place(x=150, y=70)
@@ -463,8 +459,9 @@ def dodaj_biljku():
 
     pocetnaButton=Button(root, text="Pocetna stranica",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_app).place(x=750, y=10)
     mojProfilButton=Button(root, text="Moj profil",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_profil).place(x=750, y=40)
-    posudeButton=Button(root, text="Posude",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_posude).place(x=750, y=70)
-    cancelButton=Button(root, text="Izlaz",width=15, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=quit).place(x=750, y=100)
+    biljkeButton=Button(root, text="Biljke",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_biljke).place(x=750, y=70)
+    posudeButton=Button(root, text="Posude",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_posude).place(x=750, y=100)
+    cancelButton=Button(root, text="Izlaz",width=15, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=quit).place(x=750, y=130)
 
     root.mainloop()
 
