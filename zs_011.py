@@ -829,14 +829,14 @@ def spremi(unosidBiljke, unosimeBiljke, unospolozajBiljke, unosmintemp, unosmaxt
                                     unosidBiljke_db INTEGER NOT NULL DEFAULT 0,
                                     unosimeBiljke_db TEXT NOT NULL,
                                     unospolozajBiljke_db TEXT NOT NULL,
-                                    unosmintemp_db TEXT NOT NULL,
-                                    unosmaxtemp_db TEXT NOT NULL,
-                                    unosminVlaznost_db TEXT NOT NULL,
-                                    unosmaxVlaznost_db TEXT NOT NULL,
-                                    unosminSvjetlost_db TEXT NOT NULL,
-                                    unosmaxSvjetlost_db TEXT NOT NULL,
-                                    unosminHrana_db TEXT NOT NULL,
-                                    unosmaxHrana_db TEXT NOT NULL);'''
+                                    unosmintemp_db INTEGER NOT NULL,
+                                    unosmaxtemp_db INTEGER NOT NULL,
+                                    unosminVlaznost_db INTEGER NOT NULL,
+                                    unosmaxVlaznost_db INTEGER NOT NULL,
+                                    unosminSvjetlost_db INTEGER NOT NULL,
+                                    unosmaxSvjetlost_db INTEGER NOT NULL,
+                                    unosminHrana_db INTEGER NOT NULL,
+                                    unosmaxHrana_db INTEGER NOT NULL);'''
         database_name='Baza_podataka.db'
 
         try:
