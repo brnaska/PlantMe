@@ -8,6 +8,10 @@ import json
 import sqlite3
 from datetime import date, datetime
 import random
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.figure import Figure
+from matplotlib import pyplot as plt
+import numpy as np
 
 now=datetime.now()
 mojaappdan=now.strftime("%d.%m.%Y.")
@@ -101,229 +105,264 @@ def open_profil():
     root.mainloop()
 
 #################################### DETALJI --> BILJKE ####################################
-def open_detalji1():
-    clearRoot(root)
-    root.title(f'PyFloraPosuda - Biljke')
-    root['bg'] = 'DarkSeaGreen2'
-    root.geometry('900x500')
+# def open_detalji1():
+#     clearRoot(root)
+#     root.title(f'PyFloraPosuda - Biljke')
+#     root['bg'] = 'DarkSeaGreen2'
+#     root.geometry('900x500')
 
-    biljka1 = Image.open(r'Slike/Biljke/Orhideja.jpg')
-    biljka1R = biljka1.resize((250, 250), Image.ANTIALIAS)
-    biljka1N = ImageTk.PhotoImage(biljka1R)
-    labelB1 = tk.Label(root, image=biljka1N, bg='DarkSeaGreen3')
-    labelB1.place(x=400,y=70)
+#     biljka1 = Image.open(r'Slike/Biljke/Orhideja.jpg')
+#     biljka1R = biljka1.resize((250, 250), Image.ANTIALIAS)
+#     biljka1N = ImageTk.PhotoImage(biljka1R)
+#     labelB1 = tk.Label(root, image=biljka1N, bg='DarkSeaGreen3')
+#     labelB1.place(x=400,y=70)
 
-    oBiljka1_1='1. Orhideja - Odrazavanje'
-    oBiljka1=tk.StringVar()
-    oBiljka1.set(oBiljka1_1)
-    oBiljka1L=tk.Label(root,textvariable=oBiljka1, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oBiljka1L.place(x=80,y=40)
+#     oBiljka1_1='1. Orhideja - Odrazavanje'
+#     oBiljka1=tk.StringVar()
+#     oBiljka1.set(oBiljka1_1)
+#     oBiljka1L=tk.Label(root,textvariable=oBiljka1, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+#     oBiljka1L.place(x=80,y=40)
 
-    oTemperatura1_1='Temperatura: 23-29 °C'
-    oTemperatura1=tk.StringVar()
-    oTemperatura1.set(oTemperatura1_1)
-    oTemperatura1L=tk.Label(root,textvariable=oTemperatura1, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oTemperatura1L.place(x=100,y=90)
+#     oTemperatura1_1='Temperatura: 23-29 °C'
+#     oTemperatura1=tk.StringVar()
+#     oTemperatura1.set(oTemperatura1_1)
+#     oTemperatura1L=tk.Label(root,textvariable=oTemperatura1, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+#     oTemperatura1L.place(x=100,y=90)
 
-    oVlaznost1_1='Vlaznost: 40-70 %'
-    oVlaznost1=tk.StringVar()
-    oVlaznost1.set(oVlaznost1_1)
-    oVlaznost1L=tk.Label(root,textvariable=oVlaznost1, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oVlaznost1L.place(x=100,y=140)
+#     oVlaznost1_1='Vlaznost: 40-70 %'
+#     oVlaznost1=tk.StringVar()
+#     oVlaznost1.set(oVlaznost1_1)
+#     oVlaznost1L=tk.Label(root,textvariable=oVlaznost1, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+#     oVlaznost1L.place(x=100,y=140)
 
-    oSvjetlost1_1='Svjetlost: 4500-6000 K'
-    oSvjetlost1=tk.StringVar()
-    oSvjetlost1.set(oSvjetlost1_1)
-    oSvjetlost1L=tk.Label(root,textvariable=oSvjetlost1, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oSvjetlost1L.place(x=100,y=190)
+#     oSvjetlost1_1='Svjetlost: 4500-6000 K'
+#     oSvjetlost1=tk.StringVar()
+#     oSvjetlost1.set(oSvjetlost1_1)
+#     oSvjetlost1L=tk.Label(root,textvariable=oSvjetlost1, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+#     oSvjetlost1L.place(x=100,y=190)
 
-    oHrana1_1='Hrana: 70-100 %'
-    oHrana1=tk.StringVar()
-    oHrana1.set(oHrana1_1)
-    oHrana1L=tk.Label(root,textvariable=oHrana1, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oHrana1L.place(x=100,y=240)
+#     oHrana1_1='Hrana: 70-100 %'
+#     oHrana1=tk.StringVar()
+#     oHrana1.set(oHrana1_1)
+#     oHrana1L=tk.Label(root,textvariable=oHrana1, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+#     oHrana1L.place(x=100,y=240)
 
-    oPolozaj1_1='Polozaj: Prozor kuhinje'
-    oPolozaj1=tk.StringVar()
-    oPolozaj1.set(oPolozaj1_1)
-    oPolozaj1L=tk.Label(root,textvariable=oPolozaj1, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oPolozaj1L.place(x=100,y=290)
+#     oPolozaj1_1='Polozaj: Prozor kuhinje'
+#     oPolozaj1=tk.StringVar()
+#     oPolozaj1.set(oPolozaj1_1)
+#     oPolozaj1L=tk.Label(root,textvariable=oPolozaj1, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+#     oPolozaj1L.place(x=100,y=290)
     
-    pocetnaButton=Button(root, text="Pocetna stranica",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_app).place(x=750, y=10)
-    mojProfilButton=Button(root, text="Moj profil",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_profil).place(x=750, y=40)
-    biljkeButton=Button(root, text="Biljke",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_biljke).place(x=750, y=70)
-    posudeButton=Button(root, text="Posude",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_posude).place(x=750, y=100)
-    cancelButton=Button(root, text="Izlaz",width=15, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=quit).place(x=750, y=130)
+#     pocetnaButton=Button(root, text="Pocetna stranica",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_app).place(x=750, y=10)
+#     mojProfilButton=Button(root, text="Moj profil",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_profil).place(x=750, y=40)
+#     biljkeButton=Button(root, text="Biljke",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_biljke).place(x=750, y=70)
+#     posudeButton=Button(root, text="Posude",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_posude).place(x=750, y=100)
+#     cancelButton=Button(root, text="Izlaz",width=15, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=quit).place(x=750, y=130)
 
-    root.mainloop()
+#     root.mainloop()
 
-def open_detalji2():
-    clearRoot(root)
-    root.title(f'PyFloraPosuda - Biljke')
-    root['bg'] = 'DarkSeaGreen2'
-    root.geometry('900x500')
+# def open_detalji2():
+#     clearRoot(root)
+#     root.title(f'PyFloraPosuda - Biljke')
+#     root['bg'] = 'DarkSeaGreen2'
+#     root.geometry('900x500')
 
-    biljka2 = Image.open(r'Slike\Biljke\Macuhice.jpg')
-    biljka2R = biljka2.resize((250, 250), Image.ANTIALIAS)
-    biljka2N = ImageTk.PhotoImage(biljka2R)
-    labelB2 = tk.Label(root, image=biljka2N, bg='DarkSeaGreen3')
-    labelB2.place(x=400,y=70)
+#     biljka2 = Image.open(r'Slike\Biljke\Macuhice.jpg')
+#     biljka2R = biljka2.resize((250, 250), Image.ANTIALIAS)
+#     biljka2N = ImageTk.PhotoImage(biljka2R)
+#     labelB2 = tk.Label(root, image=biljka2N, bg='DarkSeaGreen3')
+#     labelB2.place(x=400,y=70)
 
-    oBiljka2_1='2. Macuhice - Odrazavanje'
-    oBiljka2=tk.StringVar()
-    oBiljka2.set(oBiljka2_1)
-    oBiljka2L=tk.Label(root,textvariable=oBiljka2, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oBiljka2L.place(x=80,y=40)
+#     oBiljka2_1='2. Macuhice - Odrazavanje'
+#     oBiljka2=tk.StringVar()
+#     oBiljka2.set(oBiljka2_1)
+#     oBiljka2L=tk.Label(root,textvariable=oBiljka2, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+#     oBiljka2L.place(x=80,y=40)
 
-    oTemperatura2_1='Temperatura: 15-21 °C'
-    oTemperatura2=tk.StringVar()
-    oTemperatura2.set(oTemperatura2_1)
-    oTemperatura2L=tk.Label(root,textvariable=oTemperatura2, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oTemperatura2L.place(x=100,y=90)
+#     oTemperatura2_1='Temperatura: 15-21 °C'
+#     oTemperatura2=tk.StringVar()
+#     oTemperatura2.set(oTemperatura2_1)
+#     oTemperatura2L=tk.Label(root,textvariable=oTemperatura2, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+#     oTemperatura2L.place(x=100,y=90)
 
-    oVlaznost2_1='Vlaznost: 40-60 %'
-    oVlaznost2=tk.StringVar()
-    oVlaznost2.set(oVlaznost2_1)
-    oVlaznost2L=tk.Label(root,textvariable=oVlaznost2, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oVlaznost2L.place(x=100,y=140)
+#     oVlaznost2_1='Vlaznost: 40-60 %'
+#     oVlaznost2=tk.StringVar()
+#     oVlaznost2.set(oVlaznost2_1)
+#     oVlaznost2L=tk.Label(root,textvariable=oVlaznost2, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+#     oVlaznost2L.place(x=100,y=140)
 
-    oSvjetlost2_1='Svjetlost: 4500-6500 K'
-    oSvjetlost2=tk.StringVar()
-    oSvjetlost2.set(oSvjetlost2_1)
-    oSvjetlost2L=tk.Label(root,textvariable=oSvjetlost2, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oSvjetlost2L.place(x=100,y=190)
+#     oSvjetlost2_1='Svjetlost: 4500-6500 K'
+#     oSvjetlost2=tk.StringVar()
+#     oSvjetlost2.set(oSvjetlost2_1)
+#     oSvjetlost2L=tk.Label(root,textvariable=oSvjetlost2, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+#     oSvjetlost2L.place(x=100,y=190)
 
-    oHrana2_1='Hrana: 70-100 %'
-    oHrana2=tk.StringVar()
-    oHrana2.set(oHrana2_1)
-    oHrana2L=tk.Label(root,textvariable=oHrana2, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oHrana2L.place(x=100,y=240)
+#     oHrana2_1='Hrana: 70-100 %'
+#     oHrana2=tk.StringVar()
+#     oHrana2.set(oHrana2_1)
+#     oHrana2L=tk.Label(root,textvariable=oHrana2, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+#     oHrana2L.place(x=100,y=240)
 
-    oPolozaj2_1='Polozaj: Prozor WC-a'
-    oPolozaj2=tk.StringVar()
-    oPolozaj2.set(oPolozaj2_1)
-    oPolozaj2L=tk.Label(root,textvariable=oPolozaj2, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oPolozaj2L.place(x=100,y=290)
+#     oPolozaj2_1='Polozaj: Prozor WC-a'
+#     oPolozaj2=tk.StringVar()
+#     oPolozaj2.set(oPolozaj2_1)
+#     oPolozaj2L=tk.Label(root,textvariable=oPolozaj2, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+#     oPolozaj2L.place(x=100,y=290)
     
-    pocetnaButton=Button(root, text="Pocetna stranica",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_app).place(x=750, y=10)
-    mojProfilButton=Button(root, text="Moj profil",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_profil).place(x=750, y=40)
-    biljkeButton=Button(root, text="Biljke",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_biljke).place(x=750, y=70)
-    posudeButton=Button(root, text="Posude",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_posude).place(x=750, y=100)
-    cancelButton=Button(root, text="Izlaz",width=15, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=quit).place(x=750, y=130)
+#     pocetnaButton=Button(root, text="Pocetna stranica",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_app).place(x=750, y=10)
+#     mojProfilButton=Button(root, text="Moj profil",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_profil).place(x=750, y=40)
+#     biljkeButton=Button(root, text="Biljke",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_biljke).place(x=750, y=70)
+#     posudeButton=Button(root, text="Posude",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_posude).place(x=750, y=100)
+#     cancelButton=Button(root, text="Izlaz",width=15, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=quit).place(x=750, y=130)
    
-    root.mainloop()
+#     root.mainloop()
 
-def open_detalji3():
-    clearRoot(root)
-    root.title(f'PyFloraPosuda - Biljke')
-    root['bg'] = 'DarkSeaGreen2'
-    root.geometry('900x500')
+# def open_detalji3():
+#     clearRoot(root)
+#     root.title(f'PyFloraPosuda - Biljke')
+#     root['bg'] = 'DarkSeaGreen2'
+#     root.geometry('900x500')
 
-    biljka3 = Image.open(r'Slike\Biljke\Kaktus.webp')
-    biljka3R = biljka3.resize((250, 250), Image.ANTIALIAS)
-    biljka3N = ImageTk.PhotoImage(biljka3R)
-    labelB3 = tk.Label(root, image=biljka3N, bg='DarkSeaGreen3')
-    labelB3.place(x=400,y=70)
+#     biljka3 = Image.open(r'Slike\Biljke\Kaktus.webp')
+#     biljka3R = biljka3.resize((250, 250), Image.ANTIALIAS)
+#     biljka3N = ImageTk.PhotoImage(biljka3R)
+#     labelB3 = tk.Label(root, image=biljka3N, bg='DarkSeaGreen3')
+#     labelB3.place(x=400,y=70)
 
-    oBiljka3_1='3. Kaktus - Odrazavanje'
-    oBiljka3=tk.StringVar()
-    oBiljka3.set(oBiljka3_1)
-    oBiljka3L=tk.Label(root,textvariable=oBiljka3, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oBiljka3L.place(x=80,y=40)
+#     oBiljka3_1='3. Kaktus - Odrazavanje'
+#     oBiljka3=tk.StringVar()
+#     oBiljka3.set(oBiljka3_1)
+#     oBiljka3L=tk.Label(root,textvariable=oBiljka3, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+#     oBiljka3L.place(x=80,y=40)
 
-    oTemperatura3_1='Temperatura: 22-32 °C'
-    oTemperatura3=tk.StringVar()
-    oTemperatura3.set(oTemperatura3_1)
-    oTemperatura3L=tk.Label(root,textvariable=oTemperatura3, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oTemperatura3L.place(x=100,y=90)
+#     oTemperatura3_1='Temperatura: 22-32 °C'
+#     oTemperatura3=tk.StringVar()
+#     oTemperatura3.set(oTemperatura3_1)
+#     oTemperatura3L=tk.Label(root,textvariable=oTemperatura3, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+#     oTemperatura3L.place(x=100,y=90)
 
-    oVlaznost3_1='Vlaznost: 20-40 %'
-    oVlaznost3=tk.StringVar()
-    oVlaznost3.set(oVlaznost3_1)
-    oVlaznost3L=tk.Label(root,textvariable=oVlaznost3, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oVlaznost3L.place(x=100,y=140)
+#     oVlaznost3_1='Vlaznost: 20-40 %'
+#     oVlaznost3=tk.StringVar()
+#     oVlaznost3.set(oVlaznost3_1)
+#     oVlaznost3L=tk.Label(root,textvariable=oVlaznost3, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+#     oVlaznost3L.place(x=100,y=140)
 
-    oSvjetlost3_1='Svjetlost: 5000-6500 K'
-    oSvjetlost3=tk.StringVar()
-    oSvjetlost3.set(oSvjetlost3_1)
-    oSvjetlost3L=tk.Label(root,textvariable=oSvjetlost3, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oSvjetlost3L.place(x=100,y=190)
+#     oSvjetlost3_1='Svjetlost: 5000-6500 K'
+#     oSvjetlost3=tk.StringVar()
+#     oSvjetlost3.set(oSvjetlost3_1)
+#     oSvjetlost3L=tk.Label(root,textvariable=oSvjetlost3, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+#     oSvjetlost3L.place(x=100,y=190)
 
-    oHrana3_1='Hrana: 70-100 %'
-    oHrana3=tk.StringVar()
-    oHrana3.set(oHrana3_1)
-    oHrana3L=tk.Label(root,textvariable=oHrana3, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oHrana3L.place(x=100,y=240)
+#     oHrana3_1='Hrana: 70-100 %'
+#     oHrana3=tk.StringVar()
+#     oHrana3.set(oHrana3_1)
+#     oHrana3L=tk.Label(root,textvariable=oHrana3, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+#     oHrana3L.place(x=100,y=240)
 
-    oPolozaj3_1='Polozaj: Staklena balkonska\n\tvrata'
-    oPolozaj3=tk.StringVar()
-    oPolozaj3.set(oPolozaj3_1)
-    oPolozaj3L=tk.Label(root,textvariable=oPolozaj3, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oPolozaj3L.place(x=100,y=290)
+#     oPolozaj3_1='Polozaj: Staklena balkonska\n\tvrata'
+#     oPolozaj3=tk.StringVar()
+#     oPolozaj3.set(oPolozaj3_1)
+#     oPolozaj3L=tk.Label(root,textvariable=oPolozaj3, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+#     oPolozaj3L.place(x=100,y=290)
     
-    pocetnaButton=Button(root, text="Pocetna stranica",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_app).place(x=750, y=10)
-    mojProfilButton=Button(root, text="Moj profil",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_profil).place(x=750, y=40)
-    biljkeButton=Button(root, text="Biljke",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_biljke).place(x=750, y=70)
-    posudeButton=Button(root, text="Posude",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_posude).place(x=750, y=100)
-    cancelButton=Button(root, text="Izlaz",width=15, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=quit).place(x=750, y=130)
+#     pocetnaButton=Button(root, text="Pocetna stranica",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_app).place(x=750, y=10)
+#     mojProfilButton=Button(root, text="Moj profil",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_profil).place(x=750, y=40)
+#     biljkeButton=Button(root, text="Biljke",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_biljke).place(x=750, y=70)
+#     posudeButton=Button(root, text="Posude",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_posude).place(x=750, y=100)
+#     cancelButton=Button(root, text="Izlaz",width=15, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=quit).place(x=750, y=130)
    
-    root.mainloop()
+#     root.mainloop()
 
-def open_detalji4():
-    clearRoot(root)
-    root.title(f'PyFloraPosuda - Biljke')
-    root['bg'] = 'DarkSeaGreen2'
-    root.geometry('900x500')
+# def open_detalji4():
+#     clearRoot(root)
+#     root.title(f'PyFloraPosuda - Biljke')
+#     root['bg'] = 'DarkSeaGreen2'
+#     root.geometry('900x500')
 
-    biljka4 = Image.open(r'Slike\Biljke\FikusBenjamin.jpg')
-    biljka4R = biljka4.resize((250, 250), Image.ANTIALIAS)
-    biljka4N = ImageTk.PhotoImage(biljka4R)
-    labelB4 = tk.Label(root, image=biljka4N, bg='DarkSeaGreen3')
-    labelB4.place(x=400,y=70)
+#     biljka4 = Image.open(r'Slike\Biljke\FikusBenjamin.jpg')
+#     biljka4R = biljka4.resize((250, 250), Image.ANTIALIAS)
+#     biljka4N = ImageTk.PhotoImage(biljka4R)
+#     labelB4 = tk.Label(root, image=biljka4N, bg='DarkSeaGreen3')
+#     labelB4.place(x=400,y=70)
 
-    oBiljka4_1='4. Fikus Benjamin - Odrazavanje'
-    oBiljka4=tk.StringVar()
-    oBiljka4.set(oBiljka4_1)
-    oBiljka4L=tk.Label(root,textvariable=oBiljka4, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oBiljka4L.place(x=80,y=40)
+#     oBiljka4_1='4. Fikus Benjamin - Odrazavanje'
+#     oBiljka4=tk.StringVar()
+#     oBiljka4.set(oBiljka4_1)
+#     oBiljka4L=tk.Label(root,textvariable=oBiljka4, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+#     oBiljka4L.place(x=80,y=40)
 
-    oTemperatura4_1='Temperatura: 20-28 °C'
-    oTemperatura4=tk.StringVar()
-    oTemperatura4.set(oTemperatura4_1)
-    oTemperatura4L=tk.Label(root,textvariable=oTemperatura4, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oTemperatura4L.place(x=100,y=90)
+#     oTemperatura4_1='Temperatura: 20-28 °C'
+#     oTemperatura4=tk.StringVar()
+#     oTemperatura4.set(oTemperatura4_1)
+#     oTemperatura4L=tk.Label(root,textvariable=oTemperatura4, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+#     oTemperatura4L.place(x=100,y=90)
 
-    oVlaznost4_1='Vlaznost: 40-75 %'
-    oVlaznost4=tk.StringVar()
-    oVlaznost4.set(oVlaznost4_1)
-    oVlaznost4L=tk.Label(root,textvariable=oVlaznost4, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oVlaznost4L.place(x=100,y=140)
+#     oVlaznost4_1='Vlaznost: 40-75 %'
+#     oVlaznost4=tk.StringVar()
+#     oVlaznost4.set(oVlaznost4_1)
+#     oVlaznost4L=tk.Label(root,textvariable=oVlaznost4, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+#     oVlaznost4L.place(x=100,y=140)
 
-    oSvjetlost4_1='Svjetlost: 4000-5500 K'
-    oSvjetlost4=tk.StringVar()
-    oSvjetlost4.set(oSvjetlost4_1)
-    oSvjetlost4L=tk.Label(root,textvariable=oSvjetlost4, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oSvjetlost4L.place(x=100,y=190)
+#     oSvjetlost4_1='Svjetlost: 4000-5500 K'
+#     oSvjetlost4=tk.StringVar()
+#     oSvjetlost4.set(oSvjetlost4_1)
+#     oSvjetlost4L=tk.Label(root,textvariable=oSvjetlost4, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+#     oSvjetlost4L.place(x=100,y=190)
 
-    oHrana4_1='Hrana: 70-100 %'
-    oHrana4=tk.StringVar()
-    oHrana4.set(oHrana4_1)
-    oHrana4L=tk.Label(root,textvariable=oHrana4, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oHrana4L.place(x=100,y=240)
+#     oHrana4_1='Hrana: 70-100 %'
+#     oHrana4=tk.StringVar()
+#     oHrana4.set(oHrana4_1)
+#     oHrana4L=tk.Label(root,textvariable=oHrana4, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+#     oHrana4L.place(x=100,y=240)
 
-    oPolozaj4_1='Polozaj: Kut dnevnog\n\tboravka'
-    oPolozaj4=tk.StringVar()
-    oPolozaj4.set(oPolozaj4_1)
-    oPolozaj4L=tk.Label(root,textvariable=oPolozaj4, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oPolozaj4L.place(x=100,y=290)
+#     oPolozaj4_1='Polozaj: Kut dnevnog\n\tboravka'
+#     oPolozaj4=tk.StringVar()
+#     oPolozaj4.set(oPolozaj4_1)
+#     oPolozaj4L=tk.Label(root,textvariable=oPolozaj4, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+#     oPolozaj4L.place(x=100,y=290)
     
-    pocetnaButton=Button(root, text="Pocetna stranica",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_app).place(x=750, y=10)
-    mojProfilButton=Button(root, text="Moj profil",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_profil).place(x=750, y=40)
-    biljkeButton=Button(root, text="Biljke",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_biljke).place(x=750, y=70)
-    posudeButton=Button(root, text="Posude",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_posude).place(x=750, y=100)
-    cancelButton=Button(root, text="Izlaz",width=15, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=quit).place(x=750, y=130)
+#     pocetnaButton=Button(root, text="Pocetna stranica",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_app).place(x=750, y=10)
+#     mojProfilButton=Button(root, text="Moj profil",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_profil).place(x=750, y=40)
+#     biljkeButton=Button(root, text="Biljke",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_biljke).place(x=750, y=70)
+#     posudeButton=Button(root, text="Posude",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_posude).place(x=750, y=100)
+#     cancelButton=Button(root, text="Izlaz",width=15, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=quit).place(x=750, y=130)
    
-    root.mainloop()
+#     root.mainloop()
+
+######################################## GRAFOVI #######################################
+def open_line():
+    quit
+    # root = tk.Tk()
+    # root.title("Line Chart")
+
+    # fig = Figure(figsize=(7,1.5), dpi=100)
+    # x = np.linspace(0, 10, 100)
+    # y = np.sin(x)
+    # ax = fig.add_subplot(111)
+    # ax.plot(x, y)
+
+    # canvas = FigureCanvasTkAgg(fig, master=root)
+    # canvas.draw()
+    # canvas.get_tk_widget().pack()
+
+    # tk.mainloop()
+
+def open_pie():
+    quit
+    # cars = ['AUDI', 'BMW', 'FORD',
+    #     'TESLA', 'JAGUAR', 'MERCEDES']
+ 
+    # data = [23, 17, 35, 29, 12, 41]
+        
+    # # Creating plot
+    # fig = plt.figure(figsize =(7,1))
+    # plt.pie(data, labels = cars)
+        
+    # # show plot
+    # plt.show()
+
+def open_histo():
+    quit
 
 ######################################## DETALJI --> POSUDE #############################
 def open_detaljiT1():
@@ -428,6 +467,10 @@ def open_detaljiT1():
     biljkeButton=Button(root, text="Biljke",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_biljke).place(x=750, y=70)
     posudeButton=Button(root, text="Posude",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_posude).place(x=750, y=100)
     cancelButton=Button(root, text="Izlaz",width=15, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=quit).place(x=750, y=130)
+
+    lineButton=Button(root, text="Line",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_line).place(x=480, y=250)
+    pieButton=Button(root, text="Pie",width=10, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=open_pie).place(x=560, y=250)
+    histoButton=Button(root, text="Histo",width=10, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=open_histo).place(x=640, y=250)
 
     root.mainloop()
 
@@ -746,6 +789,112 @@ def open_detaljiT4():
     cancelButton=Button(root, text="Izlaz",width=15, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=quit).place(x=750, y=130)
 
     root.mainloop()
+    
+###################### BOTUNI DODAVANJA BILJKE ##############
+def dodaj_sliku():
+    filetypes = (("JPEG files", "*.jpg"), ("PNG files", "*.png"), ("All files", "*.*"))
+    filepath = filedialog.askopenfilename(title="Biljke", filetypes=filetypes)
+    return filepath
+
+
+def dodaj_posudu():
+    quit
+def spremi():
+    create_table_query= '''CREATE TABLE IF NOT EXISTS Biljke(
+                                id INTEGER PRIMARY KEY,
+                                id_biljke INTEGER NOT NULL DEFAULT 0,
+                                naziv_biljke TEXT NOT NULL,
+                                polozaj_Biljke TEXT NOT NULL,
+                                min_temp TEXT NOT NULL,
+                                max_temp TEXT NOT NULL,
+                                min_Vlaznost TEXT NOT NULL,
+                                max_Vlaznost TEXT NOT NULL,
+                                min_Svjetlost TEXT NOT NULL,
+                                max_Svjetlost TEXT NOT NULL,
+                                min_Hrana TEXT NOT NULL,
+                                max_Hrana TEXT NOT NULL);'''
+
+    database_name='Baza podataka.db'
+
+    try:
+        sqliteConnection=sqlite3.connect(database_name)
+        cursor=sqliteConnection.cursor()
+        print(f'SQLite baza {database_name} je kreirana i spojena')
+        cursor.execute(create_table_query)
+        sqliteConnection.commit()       #commit primjenjuje nas upit
+        print('Tabela vrijednosti senzora dodana u bazu')
+        cursor.close()
+        print('CURSOR otpusten')
+    except sqlite3.Error as error:
+        print('Doslo je do pogreske prilikom spajanja na bazu: ', error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+            print('SQLite verzija je zatvorena.')
+
+    insert_into_table_query='''INSERT INTO Biljke (unosidBiljke, unosimeBiljke, unospolozajBiljke, unosmintemp, unosmaxtemp, unosminVlaznost, unosmaxVlaznost, unosminSvjetlost, unosmaxSvjetlost, unosminHrana, unosmaxHrana)    
+                                VALUES (?,?,?,?,?,?,?,?,?,?)'''
+    
+    try:
+        sqliteConnection=sqlite3.connect(database_name)
+        cursor=sqliteConnection.cursor()
+        print(f'SQLite baza {database_name} je kreirana i spojena')
+        cursor.execute(insert_into_table_query, (unosidBiljke, unosimeBiljke, unospolozajBiljke, unosmintemp, unosmaxtemp, unosminVlaznost, unosmaxVlaznost, unosminSvjetlost, unosmaxSvjetlost, unosminHrana, unosmaxHrana))
+        sqliteConnection.commit()
+        cursor.close()
+        print('CURSOR otpusten')
+    except sqlite3.Error as error:
+        print('Doslo je do pogreske prilikom spajanja na bazu: ', error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+            print('SQLite verzija je zatvorena.')
+
+
+####################### DODAJ BILJKU ##################
+def dodaj_biljku():
+    clearRoot(root)
+    root.title(f'PyFloraPosuda - Dodaj Biljku')
+    root['bg'] = 'DarkSeaGreen2'
+    root.geometry('900x500')
+
+    idBiljke=tk.Label(root,text="ID biljke", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=30)
+    unosidBiljke = Entry(root,show="",width=20, font=('Calibri', 15)).place(x=150, y=30)
+    imeBiljke=tk.Label(root,text="Ime biljke", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=70)
+    unosimeBiljke = Entry(root,show="",width=20, font=('Calibri', 15)).place(x=150, y=70)
+    polozajBiljke=tk.Label(root,text="Polozaj u kuci", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=110)
+    unospolozajBiljke = Entry(root,show="",width=20, font=('Calibri', 15)).place(x=150, y=110)
+    odrzavanjeBiljke=tk.Label(root,text="Odrzavanje:", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=150)
+    minTemp=tk.Label(root,text="Min. temp.°C", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=190)
+    unosmintemp = Entry(root,show="",width=7, font=('Calibri', 15)).place(x=170, y=190)
+    maxTemp=tk.Label(root,text="Max. temp.°C", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=250, y=190)
+    unosmaxtemp = Entry(root,show="",width=7, font=('Calibri', 15)).place(x=390, y=190)
+    minVlaznost=tk.Label(root,text="Min. vlaznost %", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=230)
+    unosminVlaznost = Entry(root,show="",width=7, font=('Calibri', 15)).place(x=170, y=230)
+    maxVlaznost=tk.Label(root,text="Max. vlaznost %", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=250, y=230)
+    unosmaxVlaznost = Entry(root,show="",width=7, font=('Calibri', 15)).place(x=390, y=230)
+    minSvjetlost=tk.Label(root,text="Min. svjetlost K", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=270)
+    unosminSvjetlost = Entry(root,show="",width=7, font=('Calibri', 15)).place(x=170, y=270)
+    maxSvjetlost=tk.Label(root,text="Max. svjetlost K", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=250, y=270)
+    unosmaxSvjetlost = Entry(root,show="",width=7, font=('Calibri', 15)).place(x=390, y=270)
+    minHrana=tk.Label(root,text="Min. ishrana %", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=310)
+    unosminHrana = Entry(root,show="",width=7, font=('Calibri', 15)).place(x=170, y=310)
+    maxHrana=tk.Label(root,text="Max. ishrana %", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=250, y=310)
+    unosmaxHrana = Entry(root,show="",width=7, font=('Calibri', 15)).place(x=390, y=310)
+
+    dodajSlikuButton=Button(root, text="Dodaj sliku",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=dodaj_sliku).place(x=20, y=380)
+    dodajPosuduButton=Button(root, text="Dodaj posudu",width=10, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=dodaj_posudu).place(x=110, y=380)
+    spremiButton=Button(root, text="Spremi",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=spremi).place(x=200, y=380)
+    
+    # frame = tk.Frame(root, bg='DarkSeaGreen3', width=350, height=150)
+    # frame.place(x=10, y=10)
+
+    pocetnaButton=Button(root, text="Pocetna stranica",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_app).place(x=750, y=10)
+    mojProfilButton=Button(root, text="Moj profil",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_profil).place(x=750, y=40)
+    posudeButton=Button(root, text="Posude",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_posude).place(x=750, y=70)
+    cancelButton=Button(root, text="Izlaz",width=15, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=quit).place(x=750, y=100)
+    
+    root.mainloop()
 
 #########################################  BUTTON BILJKE   ##################################
 def open_biljke():
@@ -754,129 +903,130 @@ def open_biljke():
     root['bg'] = 'DarkSeaGreen2'
     root.geometry('900x500')
     
-    ############ Frame 1 ############
-    frame1 = tk.Frame(root, bg='DarkSeaGreen2', width=350, height=150)
-    frame1.grid(row=0, column=0, padx=5, pady=5, sticky='nsew')
+    dodajButton=Button(root, text="Dodaj biljku",width=15, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=dodaj_biljku).place(x=750, y=150)
+    # ############ Frame 1 ############
+    # frame1 = tk.Frame(root, bg='DarkSeaGreen2', width=350, height=150)
+    # frame1.grid(row=0, column=0, padx=5, pady=5, sticky='nsew')
 
-    image1 = Image.open(r'Slike/Biljke/Orhideja.jpg')
-    image1 = image1.resize((150, 150), Image.ANTIALIAS)
-    biljka1 = ImageTk.PhotoImage(image1)
-    labelB1 = tk.Label(frame1, image=biljka1, bg='DarkSeaGreen2')
-    labelB1.place(x=0, y=0)
+    # image1 = Image.open(r'Slike/Biljke/Orhideja.jpg')
+    # image1 = image1.resize((150, 150), Image.ANTIALIAS)
+    # biljka1 = ImageTk.PhotoImage(image1)
+    # labelB1 = tk.Label(frame1, image=biljka1, bg='DarkSeaGreen2')
+    # labelB1.place(x=0, y=0)
 
-    tegla1 = Image.open(r'Slike\Posude\Promjer12cm.jpg')
-    tegla1R = tegla1.resize((70, 70), Image.ANTIALIAS)
-    tegla1N = ImageTk.PhotoImage(tegla1R)
-    labelT1 = tk.Label(frame1, image=tegla1N, bg='DarkSeaGreen2')
-    labelT1.place(x=210,y=50)
+    # tegla1 = Image.open(r'Slike\Posude\Promjer12cm.jpg')
+    # tegla1R = tegla1.resize((70, 70), Image.ANTIALIAS)
+    # tegla1N = ImageTk.PhotoImage(tegla1R)
+    # labelT1 = tk.Label(frame1, image=tegla1N, bg='DarkSeaGreen2')
+    # labelT1.place(x=210,y=50)
 
-    oBiljka1_1='1. Biljka je Orhideja, nalazi se \nu tegli:'
-    oBiljka1=tk.StringVar()
-    oBiljka1.set(oBiljka1_1)
-    oBiljka1L=tk.Label(frame1,textvariable=oBiljka1, font=('Segoe UI',10), bg='DarkSeaGreen2', justify='left')
-    oBiljka1L.place(x=155,y=0)
+    # oBiljka1_1='1. Biljka je Orhideja, nalazi se \nu tegli:'
+    # oBiljka1=tk.StringVar()
+    # oBiljka1.set(oBiljka1_1)
+    # oBiljka1L=tk.Label(frame1,textvariable=oBiljka1, font=('Segoe UI',10), bg='DarkSeaGreen2', justify='left')
+    # oBiljka1L.place(x=155,y=0)
 
-    oStatus1_1=f'Status: OK'
-    oStatus1=tk.StringVar()
-    oStatus1.set(oStatus1_1)
-    oStatus1L=tk.Label(frame1,textvariable=oStatus1, font=('Segoe UI',10), bg='DarkSeaGreen2', justify='left')
-    oStatus1L.place(x=155,y=130)
+    # oStatus1_1=f'Status: OK'
+    # oStatus1=tk.StringVar()
+    # oStatus1.set(oStatus1_1)
+    # oStatus1L=tk.Label(frame1,textvariable=oStatus1, font=('Segoe UI',10), bg='DarkSeaGreen2', justify='left')
+    # oStatus1L.place(x=155,y=130)
 
-    detalji1Button=Button(frame1, text="Detalji",width=7, font=('Helvetica bold',6), justify='right',bg='DarkSeaGreen2', command=open_detalji1)
-    detalji1Button.place(x=300, y=130)
+    # detalji1Button=Button(frame1, text="Detalji",width=7, font=('Helvetica bold',6), justify='right',bg='DarkSeaGreen2', command=open_detalji1)
+    # detalji1Button.place(x=300, y=130)
      
-    ################ Frame 2 ##############
-    frame2 = tk.Frame(root, bg='DarkSeaGreen2', width=350, height=150)
-    frame2.grid(row=0, column=1, padx=5, pady=5, sticky='nsew')
+    # ################ Frame 2 ##############
+    # frame2 = tk.Frame(root, bg='DarkSeaGreen2', width=350, height=150)
+    # frame2.grid(row=0, column=1, padx=5, pady=5, sticky='nsew')
 
-    image2 = Image.open(r'Slike\Biljke\Macuhice.jpg')
-    image2 = image2.resize((150, 150), Image.ANTIALIAS)
-    biljka2 = ImageTk.PhotoImage(image2)
-    labelB2 = tk.Label(frame2, image=biljka2, bg='DarkSeaGreen2')
-    labelB2.place(x=0, y=0)
+    # image2 = Image.open(r'Slike\Biljke\Macuhice.jpg')
+    # image2 = image2.resize((150, 150), Image.ANTIALIAS)
+    # biljka2 = ImageTk.PhotoImage(image2)
+    # labelB2 = tk.Label(frame2, image=biljka2, bg='DarkSeaGreen2')
+    # labelB2.place(x=0, y=0)
 
-    tegla2 = Image.open(r'Slike\Posude\Promjer9cm.jpg')
-    tegla2R = tegla2.resize((70, 70), Image.ANTIALIAS)
-    tegla2N = ImageTk.PhotoImage(tegla2R)
-    labelT2 = tk.Label(frame2, image=tegla2N, bg='DarkSeaGreen2')
-    labelT2.place(x=210,y=50)
+    # tegla2 = Image.open(r'Slike\Posude\Promjer9cm.jpg')
+    # tegla2R = tegla2.resize((70, 70), Image.ANTIALIAS)
+    # tegla2N = ImageTk.PhotoImage(tegla2R)
+    # labelT2 = tk.Label(frame2, image=tegla2N, bg='DarkSeaGreen2')
+    # labelT2.place(x=210,y=50)
 
-    oBiljka2_1='2. Biljka je Macuhica, nalazi se \nu tegli:'
-    oBiljka2=tk.StringVar()
-    oBiljka2.set(oBiljka2_1)
-    oBiljka2L=tk.Label(frame2,textvariable=oBiljka2, font=('Segoe UI',10), bg='DarkSeaGreen2', justify='left')
-    oBiljka2L.place(x=155,y=0)
+    # oBiljka2_1='2. Biljka je Macuhica, nalazi se \nu tegli:'
+    # oBiljka2=tk.StringVar()
+    # oBiljka2.set(oBiljka2_1)
+    # oBiljka2L=tk.Label(frame2,textvariable=oBiljka2, font=('Segoe UI',10), bg='DarkSeaGreen2', justify='left')
+    # oBiljka2L.place(x=155,y=0)
 
-    oStatus2_1=f'Status: OK'
-    oStatus2=tk.StringVar()
-    oStatus2.set(oStatus2_1)
-    oStatus2L=tk.Label(frame2,textvariable=oStatus2, font=('Segoe UI',10), bg='DarkSeaGreen2', justify='left')
-    oStatus2L.place(x=155,y=130)
+    # oStatus2_1=f'Status: OK'
+    # oStatus2=tk.StringVar()
+    # oStatus2.set(oStatus2_1)
+    # oStatus2L=tk.Label(frame2,textvariable=oStatus2, font=('Segoe UI',10), bg='DarkSeaGreen2', justify='left')
+    # oStatus2L.place(x=155,y=130)
 
-    detalji2Button=Button(frame2, text="Detalji",width=7, font=('Helvetica bold',6), justify='right',bg='DarkSeaGreen2', command=open_detalji2)
-    detalji2Button.place(x=300, y=130)
+    # detalji2Button=Button(frame2, text="Detalji",width=7, font=('Helvetica bold',6), justify='right',bg='DarkSeaGreen2', command=open_detalji2)
+    # detalji2Button.place(x=300, y=130)
 
-    ############### Frame 3 ##############
-    frame3 = tk.Frame(root, bg='DarkSeaGreen2', width=350, height=150)
-    frame3.grid(row=1, column=0, padx=5, pady=5, sticky='nsew')
+    # ############### Frame 3 ##############
+    # frame3 = tk.Frame(root, bg='DarkSeaGreen2', width=350, height=150)
+    # frame3.grid(row=1, column=0, padx=5, pady=5, sticky='nsew')
 
-    image3 = Image.open(r'Slike\Biljke\Kaktus.webp')
-    image3 = image3.resize((150, 150), Image.ANTIALIAS)
-    biljka3 = ImageTk.PhotoImage(image3)
-    labelB3 = tk.Label(frame3, image=biljka3, bg='DarkSeaGreen2')
-    labelB3.place(x=0, y=0)
+    # image3 = Image.open(r'Slike\Biljke\Kaktus.webp')
+    # image3 = image3.resize((150, 150), Image.ANTIALIAS)
+    # biljka3 = ImageTk.PhotoImage(image3)
+    # labelB3 = tk.Label(frame3, image=biljka3, bg='DarkSeaGreen2')
+    # labelB3.place(x=0, y=0)
 
-    tegla3 = Image.open(r'Slike\Posude\Promjer27cm.jpg')
-    tegla3R = tegla3.resize((70, 70), Image.ANTIALIAS)
-    tegla3N = ImageTk.PhotoImage(tegla3R)
-    labelT3 = tk.Label(frame3, image=tegla3N, bg='DarkSeaGreen2')
-    labelT3.place(x=210,y=50)
+    # tegla3 = Image.open(r'Slike\Posude\Promjer27cm.jpg')
+    # tegla3R = tegla3.resize((70, 70), Image.ANTIALIAS)
+    # tegla3N = ImageTk.PhotoImage(tegla3R)
+    # labelT3 = tk.Label(frame3, image=tegla3N, bg='DarkSeaGreen2')
+    # labelT3.place(x=210,y=50)
 
-    oBiljka3_1='3. Biljka je Kaktus, nalazi se \nu tegli:'
-    oBiljka3=tk.StringVar()
-    oBiljka3.set(oBiljka3_1)
-    oBiljka3L=tk.Label(frame3,textvariable=oBiljka3, font=('Segoe UI',10), bg='DarkSeaGreen2', justify='left')
-    oBiljka3L.place(x=155,y=0)
+    # oBiljka3_1='3. Biljka je Kaktus, nalazi se \nu tegli:'
+    # oBiljka3=tk.StringVar()
+    # oBiljka3.set(oBiljka3_1)
+    # oBiljka3L=tk.Label(frame3,textvariable=oBiljka3, font=('Segoe UI',10), bg='DarkSeaGreen2', justify='left')
+    # oBiljka3L.place(x=155,y=0)
 
-    oStatus3_1=f'Status: OK'
-    oStatus3=tk.StringVar()
-    oStatus3.set(oStatus3_1)
-    oStatus3L=tk.Label(frame3,textvariable=oStatus3, font=('Segoe UI',10), bg='DarkSeaGreen2', justify='left')
-    oStatus3L.place(x=155,y=130)
+    # oStatus3_1=f'Status: OK'
+    # oStatus3=tk.StringVar()
+    # oStatus3.set(oStatus3_1)
+    # oStatus3L=tk.Label(frame3,textvariable=oStatus3, font=('Segoe UI',10), bg='DarkSeaGreen2', justify='left')
+    # oStatus3L.place(x=155,y=130)
 
-    detalji3Button=Button(frame3, text="Detalji",width=7, font=('Helvetica bold',6), justify='right',bg='DarkSeaGreen2', command=open_detalji3)
-    detalji3Button.place(x=300, y=130)
+    # detalji3Button=Button(frame3, text="Detalji",width=7, font=('Helvetica bold',6), justify='right',bg='DarkSeaGreen2', command=open_detalji3)
+    # detalji3Button.place(x=300, y=130)
 
-    ################### Frame 4 ################
-    frame4 = tk.Frame(root, bg='DarkSeaGreen2', width=350, height=150)
-    frame4.grid(row=1, column=1, padx=5, pady=5, sticky='nsew')
+    # ################### Frame 4 ################
+    # frame4 = tk.Frame(root, bg='DarkSeaGreen2', width=350, height=150)
+    # frame4.grid(row=1, column=1, padx=5, pady=5, sticky='nsew')
 
-    image4 = Image.open(r'Slike\Biljke\FikusBenjamin.jpg')
-    image4 = image4.resize((150, 150), Image.ANTIALIAS)
-    biljka4 = ImageTk.PhotoImage(image4)
-    labelB4 = tk.Label(frame4, image=biljka4, bg='DarkSeaGreen2')
-    labelB4.place(x=0, y=0)
+    # image4 = Image.open(r'Slike\Biljke\FikusBenjamin.jpg')
+    # image4 = image4.resize((150, 150), Image.ANTIALIAS)
+    # biljka4 = ImageTk.PhotoImage(image4)
+    # labelB4 = tk.Label(frame4, image=biljka4, bg='DarkSeaGreen2')
+    # labelB4.place(x=0, y=0)
 
-    tegla4 = Image.open(r'Slike\Posude\Promjer40cm.jpg')
-    tegla4R = tegla4.resize((70, 70), Image.ANTIALIAS)
-    tegla4N = ImageTk.PhotoImage(tegla4R)
-    labelT4 = tk.Label(frame4, image=tegla4N, bg='DarkSeaGreen2')
-    labelT4.place(x=210,y=50)
+    # tegla4 = Image.open(r'Slike\Posude\Promjer40cm.jpg')
+    # tegla4R = tegla4.resize((70, 70), Image.ANTIALIAS)
+    # tegla4N = ImageTk.PhotoImage(tegla4R)
+    # labelT4 = tk.Label(frame4, image=tegla4N, bg='DarkSeaGreen2')
+    # labelT4.place(x=210,y=50)
 
-    oBiljka4_1='4. Biljka je Fikus Benjamin, \n nalazi se u tegli:'
-    oBiljka4=tk.StringVar()
-    oBiljka4.set(oBiljka4_1)
-    oBiljka4L=tk.Label(frame4,textvariable=oBiljka4, font=('Segoe UI',10), bg='DarkSeaGreen2', justify='left')
-    oBiljka4L.place(x=155,y=0)
+    # oBiljka4_1='4. Biljka je Fikus Benjamin, \n nalazi se u tegli:'
+    # oBiljka4=tk.StringVar()
+    # oBiljka4.set(oBiljka4_1)
+    # oBiljka4L=tk.Label(frame4,textvariable=oBiljka4, font=('Segoe UI',10), bg='DarkSeaGreen2', justify='left')
+    # oBiljka4L.place(x=155,y=0)
 
-    oStatus4_1=f'Status: OK'
-    oStatus4=tk.StringVar()
-    oStatus4.set(oStatus4_1)
-    oStatus4L=tk.Label(frame4,textvariable=oStatus4, font=('Segoe UI',10), bg='DarkSeaGreen2', justify='left')
-    oStatus4L.place(x=155,y=130)
+    # oStatus4_1=f'Status: OK'
+    # oStatus4=tk.StringVar()
+    # oStatus4.set(oStatus4_1)
+    # oStatus4L=tk.Label(frame4,textvariable=oStatus4, font=('Segoe UI',10), bg='DarkSeaGreen2', justify='left')
+    # oStatus4L.place(x=155,y=130)
 
-    detalji4Button=Button(frame4, text="Detalji",width=7, font=('Helvetica bold',6), justify='right',bg='DarkSeaGreen2', command=open_detalji4)
-    detalji4Button.place(x=300, y=130)
+    # detalji4Button=Button(frame4, text="Detalji",width=7, font=('Helvetica bold',6), justify='right',bg='DarkSeaGreen2', command=open_detalji4)
+    # detalji4Button.place(x=300, y=130)
 
     pocetnaButton=Button(root, text="Pocetna stranica",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_app).place(x=750, y=10)
     mojProfilButton=Button(root, text="Moj profil",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_profil).place(x=750, y=40)
