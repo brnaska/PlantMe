@@ -792,67 +792,19 @@ def open_detaljiT4():
     
 ###################### BOTUNI DODAVANJA BILJKE ##############
 def dodaj_sliku():
-    filetypes = (("JPEG files", "*.jpg"), ("PNG files", "*.png"), ("All files", "*.*"))
-    filepath = filedialog.askopenfilename(title="Biljke", filetypes=filetypes)
-    return filepath
+    quit
+    # filetypes = (("JPEG files", "*.jpg"), ("PNG files", "*.png"), ("All files", "*.*"))
+    # filepath = filedialog.askopenfilename(title="Biljke", filetypes=filetypes)
+    # return filepath
 
 
 def dodaj_posudu():
     quit
-def spremi():
-    create_table_query= '''CREATE TABLE IF NOT EXISTS Biljke(
-                                id INTEGER PRIMARY KEY,
-                                id_biljke INTEGER NOT NULL DEFAULT 0,
-                                naziv_biljke TEXT NOT NULL,
-                                polozaj_Biljke TEXT NOT NULL,
-                                min_temp TEXT NOT NULL,
-                                max_temp TEXT NOT NULL,
-                                min_Vlaznost TEXT NOT NULL,
-                                max_Vlaznost TEXT NOT NULL,
-                                min_Svjetlost TEXT NOT NULL,
-                                max_Svjetlost TEXT NOT NULL,
-                                min_Hrana TEXT NOT NULL,
-                                max_Hrana TEXT NOT NULL);'''
-
-    database_name='Baza podataka.db'
-
-    try:
-        sqliteConnection=sqlite3.connect(database_name)
-        cursor=sqliteConnection.cursor()
-        print(f'SQLite baza {database_name} je kreirana i spojena')
-        cursor.execute(create_table_query)
-        sqliteConnection.commit()       #commit primjenjuje nas upit
-        print('Tabela vrijednosti senzora dodana u bazu')
-        cursor.close()
-        print('CURSOR otpusten')
-    except sqlite3.Error as error:
-        print('Doslo je do pogreske prilikom spajanja na bazu: ', error)
-    finally:
-        if sqliteConnection:
-            sqliteConnection.close()
-            print('SQLite verzija je zatvorena.')
-
-    insert_into_table_query='''INSERT INTO Biljke (unosidBiljke, unosimeBiljke, unospolozajBiljke, unosmintemp, unosmaxtemp, unosminVlaznost, unosmaxVlaznost, unosminSvjetlost, unosmaxSvjetlost, unosminHrana, unosmaxHrana)    
-                                VALUES (?,?,?,?,?,?,?,?,?,?)'''
-    
-    try:
-        sqliteConnection=sqlite3.connect(database_name)
-        cursor=sqliteConnection.cursor()
-        print(f'SQLite baza {database_name} je kreirana i spojena')
-        cursor.execute(insert_into_table_query, (unosidBiljke, unosimeBiljke, unospolozajBiljke, unosmintemp, unosmaxtemp, unosminVlaznost, unosmaxVlaznost, unosminSvjetlost, unosmaxSvjetlost, unosminHrana, unosmaxHrana))
-        sqliteConnection.commit()
-        cursor.close()
-        print('CURSOR otpusten')
-    except sqlite3.Error as error:
-        print('Doslo je do pogreske prilikom spajanja na bazu: ', error)
-    finally:
-        if sqliteConnection:
-            sqliteConnection.close()
-            print('SQLite verzija je zatvorena.')
 
 
 ####################### DODAJ BILJKU ##################
 def dodaj_biljku():
+    spremi = []
     clearRoot(root)
     root.title(f'PyFloraPosuda - Dodaj Biljku')
     root['bg'] = 'DarkSeaGreen2'
@@ -893,6 +845,68 @@ def dodaj_biljku():
     mojProfilButton=Button(root, text="Moj profil",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_profil).place(x=750, y=40)
     posudeButton=Button(root, text="Posude",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_posude).place(x=750, y=70)
     cancelButton=Button(root, text="Izlaz",width=15, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=quit).place(x=750, y=100)
+
+    def spremi():
+        unosidBiljke_db = unosidBiljke.get()
+        unosimeBiljke_db = unosimeBiljke.get()
+        unospolozajBiljke_db = unospolozajBiljke.get()
+        unosmintemp_db = unosmintemp.get()
+        unosmaxtemp_db = unosmaxtemp.get()
+        unosminVlaznost_db = unosminVlaznost.get()
+        unosmaxVlaznost_db = unosmaxVlaznost.get()
+        unosminSvjetlost_db = unosminSvjetlost.get()
+        unosmaxSvjetlost_db = unosmaxSvjetlost.get()
+        unosminHrana_db = unosminHrana.get()
+        unosmaxHrana_db = unosmaxHrana.get()
+        create_table_query= '''CREATE TABLE IF NOT EXISTS Biljke(
+                                    id INTEGER PRIMARY KEY,
+                                    id_biljke INTEGER NOT NULL DEFAULT 0,
+                                    naziv_biljke TEXT NOT NULL,
+                                    polozaj_Biljke TEXT NOT NULL,
+                                    min_temp TEXT NOT NULL,
+                                    max_temp TEXT NOT NULL,
+                                    min_Vlaznost TEXT NOT NULL,
+                                    max_Vlaznost TEXT NOT NULL,
+                                    min_Svjetlost TEXT NOT NULL,
+                                    max_Svjetlost TEXT NOT NULL,
+                                    min_Hrana TEXT NOT NULL,
+                                    max_Hrana TEXT NOT NULL);'''
+
+        database_name='Baza podataka.db'
+
+        try:
+            sqliteConnection=sqlite3.connect(database_name)
+            cursor=sqliteConnection.cursor()
+            print(f'SQLite baza {database_name} je kreirana i spojena')
+            cursor.execute(create_table_query)
+            sqliteConnection.commit()       #commit primjenjuje nas upit
+            print('Tabela vrijednosti senzora dodana u bazu')
+            cursor.close()
+            print('CURSOR otpusten')
+        except sqlite3.Error as error:
+            print('Doslo je do pogreske prilikom spajanja na bazu: ', error)
+        finally:
+            if sqliteConnection:
+                sqliteConnection.close()
+                print('SQLite verzija je zatvorena.')
+
+        insert_into_table_query='''INSERT INTO Biljke (unosidBiljke_db, unosimeBiljke_db, unospolozajBiljke_db, unosmintemp_db, unosmaxtemp_db, unosminVlaznost_db, unosmaxVlaznost_db, unosminSvjetlost_db, unosmaxSvjetlost_db, unosminHrana_db, unosmaxHrana_db)    
+                                    VALUES (?,?,?,?,?,?,?,?,?,?)'''
+        
+        try:
+            sqliteConnection=sqlite3.connect(database_name)
+            cursor=sqliteConnection.cursor()
+            print(f'SQLite baza {database_name} je kreirana i spojena')
+            cursor.execute(insert_into_table_query, (unosidBiljke_db, unosimeBiljke_db, unospolozajBiljke_db, unosmintemp_db, unosmaxtemp_db, unosminVlaznost_db, unosmaxVlaznost_db, unosminSvjetlost_db, unosmaxSvjetlost_db, unosminHrana_db, unosmaxHrana_db))
+            sqliteConnection.commit()
+            cursor.close()
+            print('CURSOR otpusten')
+        except sqlite3.Error as error:
+            print('Doslo je do pogreske prilikom spajanja na bazu: ', error)
+        finally:
+            if sqliteConnection:
+                sqliteConnection.close()
+                print('SQLite verzija je zatvorena.')
     
     root.mainloop()
 
