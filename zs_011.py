@@ -115,61 +115,183 @@ def open_profil():
     root.mainloop()
 
 #################################### DETALJI --> BILJKE ####################################
-# def open_detalji1():
-#     clearRoot(root)
-#     root.title(f'PyFloraPosuda - Biljke')
-#     root['bg'] = 'DarkSeaGreen2'
-#     root.geometry('900x500')
+def open_detalji_biljka(id):
+    clearRoot(root)
+    pocetnaButton=Button(root, text="Pocetna stranica",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_app).place(x=850, y=10)
+    mojProfilButton=Button(root, text="Moj profil",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_profil).place(x=850, y=40)
+    biljkeButton=Button(root, text="Biljke",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_biljke).place(x=850, y=70)
+    posudeButton=Button(root, text="Posude",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_posude).place(x=850, y=100)
+    cancelButton=Button(root, text="Izlaz",width=15, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=quit).place(x=850, y=130)
 
-#     biljka1 = Image.open(r'Slike/Biljke/Orhideja.jpg')
-#     biljka1R = biljka1.resize((250, 250), Image.ANTIALIAS)
-#     biljka1N = ImageTk.PhotoImage(biljka1R)
-#     labelB1 = tk.Label(root, image=biljka1N, bg='DarkSeaGreen3')
-#     labelB1.place(x=400,y=70)
+    # Retrieve plant data from the database using plantId
+    conn = sqlite3.connect('Baza_podataka.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM Biljke WHERE id=?", (id,))
+    plant_data = c.fetchone()
+    conn.close()
 
-#     oBiljka1_1='1. Orhideja - Odrazavanje'
-#     oBiljka1=tk.StringVar()
-#     oBiljka1.set(oBiljka1_1)
-#     oBiljka1L=tk.Label(root,textvariable=oBiljka1, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-#     oBiljka1L.place(x=80,y=40)
+    # Set attributes for plant data
+    plant_name = plant_data[1]
+    polozaj = plant_data[2]
+    min_temp = plant_data[3]
+    max_temp = plant_data[4]
+    min_vlaznost = plant_data[5]
+    max_vlaznost = plant_data[6]
+    min_svjetlost = plant_data[7]
+    max_svjetlost = plant_data[8]
+    min_hrana = plant_data[9]
+    max_hrana = plant_data[10]
+    photo_image = plant_data[11]
+    with open(photo_image, 'rb') as file:
+        contents = file.read()
+    photo = Image.open(io.BytesIO(contents))
+    photo = photo.resize((250, 250), Image.ANTIALIAS)
 
-#     oTemperatura1_1='Temperatura: 23-29 °C'
-#     oTemperatura1=tk.StringVar()
-#     oTemperatura1.set(oTemperatura1_1)
-#     oTemperatura1L=tk.Label(root,textvariable=oTemperatura1, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-#     oTemperatura1L.place(x=100,y=90)
+    canvas = tk.Canvas(root, width=150, height=150)
+    canvas.grid(row=0, column=0, rowspan=2, padx=10, pady=10)
+    photo = ImageTk.PhotoImage(photo)
+    canvas.create_image(0, 0, image=photo, anchor=tk.NW)
 
-#     oVlaznost1_1='Vlaznost: 40-70 %'
-#     oVlaznost1=tk.StringVar()
-#     oVlaznost1.set(oVlaznost1_1)
-#     oVlaznost1L=tk.Label(root,textvariable=oVlaznost1, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-#     oVlaznost1L.place(x=100,y=140)
+    name_label = tk.Label(root, text=plant_name, font=("Arial", 14), bg="DarkSeaGreen2")
+    name_label.grid(row=0, column=1, padx=10, pady=10, sticky="w")
 
-#     oSvjetlost1_1='Svjetlost: 4500-6000 K'
-#     oSvjetlost1=tk.StringVar()
-#     oSvjetlost1.set(oSvjetlost1_1)
-#     oSvjetlost1L=tk.Label(root,textvariable=oSvjetlost1, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-#     oSvjetlost1L.place(x=100,y=190)
+    pos_label = tk.Label(root, text=f"Position: {polozaj}", font=("Arial", 12), bg="DarkSeaGreen2")
+    pos_label.grid(row=1, column=1, padx=10, pady=5, sticky="w")
 
-#     oHrana1_1='Hrana: 70-100 %'
-#     oHrana1=tk.StringVar()
-#     oHrana1.set(oHrana1_1)
-#     oHrana1L=tk.Label(root,textvariable=oHrana1, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-#     oHrana1L.place(x=100,y=240)
+    temp_label = tk.Label(root, text=f"Temperature: {min_temp}°C - {max_temp}°C", font=("Arial", 12), bg="DarkSeaGreen2")
+    temp_label.grid(row=2, column=1, padx=10, pady=5, sticky="w")
 
-#     oPolozaj1_1='Polozaj: Prozor kuhinje'
-#     oPolozaj1=tk.StringVar()
-#     oPolozaj1.set(oPolozaj1_1)
-#     oPolozaj1L=tk.Label(root,textvariable=oPolozaj1, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-#     oPolozaj1L.place(x=100,y=290)
-    
-#     pocetnaButton=Button(root, text="Pocetna stranica",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_app).place(x=750, y=10)
-#     mojProfilButton=Button(root, text="Moj profil",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_profil).place(x=750, y=40)
-#     biljkeButton=Button(root, text="Biljke",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_biljke).place(x=750, y=70)
-#     posudeButton=Button(root, text="Posude",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_posude).place(x=750, y=100)
-#     cancelButton=Button(root, text="Izlaz",width=15, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=quit).place(x=750, y=130)
+    vlaz_label = tk.Label(root, text=f"Humidity: {min_vlaznost}% - {max_vlaznost}%", font=("Arial", 12), bg="DarkSeaGreen2")
+    vlaz_label.grid(row=3, column=1, padx=10, pady=5, sticky="w")
 
-#     root.mainloop()
+    svjet_label = tk.Label(root, text=f"Light: {min_svjetlost} - {max_svjetlost} lux", font=("Arial", 12), bg="DarkSeaGreen2")
+    svjet_label.grid(row=4, column=1, padx=10, pady=5, sticky="w")
+
+    hrana_label = tk.Label(root, text=f"Nutrients: {min_hrana} - {max_hrana}\n\n", font=("Arial", 12), bg="DarkSeaGreen2")
+    hrana_label.grid(row=5, column=1, padx=10, pady=5, sticky="w")
+
+    detaljiButton = tk.Button(root, text="Promjena podataka", width=15, font=('Helvetica bold', 10), justify='center', bg='DarkSeaGreen2', anchor=tk.S, command=lambda: biljka_promjena_podataka(id))
+    detaljiButton.grid(row=6, column=0, pady=(0, 10))
+
+    detaljiButton = tk.Button(root, text="Izbrisi biljku", width=15, font=('Helvetica bold', 10), justify='center', bg='DarkSeaGreen2', anchor=tk.S, command=lambda: biljka_brisanje(id))
+    detaljiButton.grid(row=6, column=1, pady=(0, 10))
+
+    root.mainloop()
+
+import tkinter as tk
+
+class EntryWithPlaceholder(tk.Entry):
+    def __init__(self, master=None, placeholder="Enter text...", color='grey'):
+        super().__init__(master)
+        self.placeholder = placeholder
+        self.placeholder_color = color
+        self.default_fg_color = self['fg']
+        self.bind("<FocusIn>", self.on_focus_in)
+        self.bind("<FocusOut>", self.on_focus_out)
+        self.put_placeholder()
+
+    def put_placeholder(self):
+        self.insert(0, self.placeholder)
+        self['fg'] = self.placeholder_color
+
+    def remove_placeholder(self):
+        self.delete(0, tk.END)
+        self['fg'] = self.default_fg_color
+
+    def on_focus_in(self, event):
+        if self['fg'] == self.placeholder_color:
+            self.remove_placeholder()
+
+    def on_focus_out(self, event):
+        if not self.get():
+            self.put_placeholder()
+
+
+def biljka_promjena_podataka(id):
+    clearRoot(root)
+    pocetnaButton=Button(root, text="Pocetna stranica",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_app).place(x=850, y=10)
+    mojProfilButton=Button(root, text="Moj profil",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_profil).place(x=850, y=40)
+    biljkeButton=Button(root, text="Biljke",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_biljke).place(x=850, y=70)
+    posudeButton=Button(root, text="Posude",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_posude).place(x=850, y=100)
+    cancelButton=Button(root, text="Izlaz",width=15, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=quit).place(x=850, y=130)
+
+    # Retrieve plant data from the database using plantId
+    conn = sqlite3.connect('Baza_podataka.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM Biljke WHERE id=?", (id,))
+    plant_data = c.fetchone()
+    conn.close()
+
+    # Set attributes for plant data
+    plant_name = plant_data[1]
+    polozaj = plant_data[2]
+    min_temp = plant_data[3]
+    max_temp = plant_data[4]
+    min_vlaznost = plant_data[5]
+    max_vlaznost = plant_data[6]
+    min_svjetlost = plant_data[7]
+    max_svjetlost = plant_data[8]
+    min_hrana = plant_data[9]
+    max_hrana = plant_data[10]
+    photo_image = plant_data[11]
+    with open(photo_image, 'rb') as file:
+        contents = file.read()
+    photo = Image.open(io.BytesIO(contents))
+    photo = photo.resize((150, 150), Image.ANTIALIAS)
+
+    canvas = tk.Canvas(root, width=150, height=150)
+    canvas.grid(row=0, column=0, rowspan=2, padx=10, pady=10)
+    photo = ImageTk.PhotoImage(photo)
+    canvas.create_image(0, 0, image=photo, anchor=tk.NW)
+
+    name_label = tk.Label(root, text=plant_name, font=("Arial", 14), bg="DarkSeaGreen2")
+    name_label.grid(row=0, column=1, padx=10, pady=10, sticky="w")
+    unos_name = EntryWithPlaceholder(root, plant_name, color="black")
+    unos_name.grid(row=0, column=2, padx=10, pady=5)
+
+    pos_label = tk.Label(root, text=f"Position: {polozaj}", font=("Arial", 12), bg="DarkSeaGreen2")
+    pos_label.grid(row=1, column=1, padx=10, pady=5, sticky="w")
+    unos_name = EntryWithPlaceholder(root, polozaj, color="black")
+    unos_name.grid(row=1, column=2, padx=10, pady=5)
+
+    temp_label = tk.Label(root, text=f"Temperature: {min_temp}°C {max_temp}°C", font=("Arial", 12), bg="DarkSeaGreen2")
+    temp_label.grid(row=2, column=1, padx=10, pady=5, sticky="w")
+    unos_name = EntryWithPlaceholder(root, min_temp, color="black")
+    unos_name.grid(row=2, column=2, padx=10, pady=5)
+    unos_name = EntryWithPlaceholder(root, max_temp, color="black")
+    unos_name.grid(row=2, column=3, padx=10, pady=5)
+
+    vlaz_label = tk.Label(root, text=f"Humidity: {min_vlaznost}% - {max_vlaznost}%", font=("Arial", 12), bg="DarkSeaGreen2")
+    vlaz_label.grid(row=3, column=1, padx=10, pady=5, sticky="w")
+    unos_name = EntryWithPlaceholder(root, min_vlaznost, color="black")
+    unos_name.grid(row=3, column=2, padx=10, pady=5)
+    unos_name = EntryWithPlaceholder(root, max_vlaznost, color="black")
+    unos_name.grid(row=3, column=3, padx=10, pady=5)
+
+    svjet_label = tk.Label(root, text=f"Light: {min_svjetlost} - {max_svjetlost} lux", font=("Arial", 12), bg="DarkSeaGreen2")
+    svjet_label.grid(row=4, column=1, padx=10, pady=5, sticky="w")
+    unos_name = EntryWithPlaceholder(root, min_svjetlost, color="black")
+    unos_name.grid(row=4, column=2, padx=10, pady=5)
+    unos_name = EntryWithPlaceholder(root, max_svjetlost, color="black")
+    unos_name.grid(row=4, column=3, padx=10, pady=5)
+
+    hrana_label = tk.Label(root, text=f"Nutrients: {min_hrana} - {max_hrana}", font=("Arial", 12), bg="DarkSeaGreen2")
+    hrana_label.grid(row=5, column=1, padx=10, pady=5, sticky="w")
+    unos_name = EntryWithPlaceholder(root, min_hrana, color="black")
+    unos_name.grid(row=5, column=2, padx=10, pady=5)
+    unos_name = EntryWithPlaceholder(root, max_hrana, color="black")
+    unos_name.grid(row=5, column=3, padx=10, pady=5)
+
+    detaljiButton = tk.Button(root, text="Ucitaj novu sliku", width=15, font=('Helvetica bold', 10), justify='center', bg='DarkSeaGreen2', anchor=tk.S, command=lambda: biljka_brisanje(id))
+    detaljiButton.grid(row=6, column=1)
+
+    detaljiButton = tk.Button(root, text="Spremi", width=15, font=('Helvetica bold', 10), justify='center', bg='DarkSeaGreen2', anchor=tk.S, command=lambda: biljka_promjena_podataka(id))
+    detaljiButton.grid(row=6, column=0)
+
+    root.mainloop()
+
+def biljka_brisanje(id):
+    quit
 
 
 ######################################## GRAFOVI #######################################
@@ -487,6 +609,9 @@ class PlantCard(tk.Frame):
         self.canvas.grid(row=0, column=0, rowspan=2, padx=10, pady=10)
         self.photo = ImageTk.PhotoImage(self.photo)
         self.canvas.create_image(0, 0, image=self.photo, anchor=tk.NW)
+        detaljiButton = tk.Button(self, text="Detalji", width=15, font=('Helvetica bold', 10), justify='center', bg='DarkSeaGreen2', anchor=tk.S, command=lambda: open_detalji_biljka(self.plantId))
+        detaljiButton.grid(row=5, column=0, pady=(0, 10))
+
 
         name_label = tk.Label(self, text=self.plant_name, font=("Arial", 14), bg="white")
         name_label.grid(row=0, column=1, padx=10, pady=10, sticky="w")
@@ -563,7 +688,7 @@ def open_biljke():
 
     # Create a Frame to hold the PlantCard widgets inside the Canvas
     plant_cards_frame = tk.Frame(canvas, bg="white")
-    canvas.create_window((0, 0), window=plant_cards_frame, anchor="nw")
+    canvas.create_window((0, 0),window=plant_cards_frame, anchor="nw")
 
     # Connect to the database
     conn = sqlite3.connect('Baza_podataka.db')
