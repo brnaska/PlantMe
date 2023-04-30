@@ -448,14 +448,9 @@ def dodaj_biljku():
     unosmaxHrana = Entry(root,show="",width=7, font=('Calibri', 15))
     unosmaxHrana.place(x=390, y=310)
 
-
-
     dodajSlikuButton=Button(root, text="Dodaj sliku",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=dodaj_sliku).place(x=20, y=380)
     dodajPosuduButton=Button(root, text="Dodaj posudu",width=10, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=dodaj_posudu).place(x=110, y=380)
-    spremiButton=Button(root, text="Spremi",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command= lambda:[switchClicked(), spremi(unosidBiljke, unosimeBiljke, unospolozajBiljke, unosmintemp, unosmaxtemp, unosminVlaznost, unosmaxVlaznost, unosminSvjetlost, unosmaxSvjetlost, unosminHrana, unosmaxHrana, file_path) ]).place(x=200, y=380)
- 
-    # frame = tk.Frame(root, bg='DarkSeaGreen3', width=350, height=150)
-    # frame.place(x=10, y=10)
+    spremiButton=Button(root, text="Spremi",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command= lambda:[switchClicked(), spremi(unosimeBiljke, unospolozajBiljke, unosmintemp, unosmaxtemp, unosminVlaznost, unosmaxVlaznost, unosminSvjetlost, unosmaxSvjetlost, unosminHrana, unosmaxHrana, file_path) ]).place(x=200, y=380)
 
     pocetnaButton=Button(root, text="Pocetna stranica",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_app).place(x=750, y=10)
     mojProfilButton=Button(root, text="Moj profil",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_profil).place(x=750, y=40)
@@ -473,6 +468,50 @@ def open_biljke():
     root.geometry('900x500')
     
     dodajButton=Button(root, text="Dodaj biljku",width=15, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=dodaj_biljku).place(x=750, y=150)
+    
+    ############ FRAME-OVI ############
+
+   '''
+    database_name='Baza_podataka.db'
+    select_table_query='SELECT * FROM Biljke'      
+    try:
+        sqliteConnection=sqlite3.connect(database_name)
+        cursor=sqliteConnection.cursor()
+        print(f'SQLite baza {database_name} je kreirana i spojena')
+        cursor.execute(select_table_query)
+        records=cursor.fetchall()
+        for row in records:
+            frame = tk.Frame(root)
+            image = Image.open(row[1])      
+            photo = ImageTk.PhotoImage(image)
+            img_label = tk.Label(frame, image=photo)
+            img_label.pack()
+            name_label = tk.Label(frame, text=row[2])  # assuming the third column contains the name of the plant
+            name_label.pack()
+            desc_label = tk.Label(frame, text=row[3])  # assuming the fourth column contains a description of the plant
+            desc_label.pack()
+            frame.pack()    
+        cursor.close()
+        print('CURSOR otpusten')
+    except sqlite3.Error as error:
+        print('Doslo je do pogreske prilikom spajanja na bazu: ', error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+            print('SQLite verzija je zatvorena.')
+'''
+    # for row in rows:
+    #     frame = tk.Frame(root)
+    #     image = Image.open(row[1])      
+    #     photo = ImageTk.PhotoImage(image)
+    #     img_label = tk.Label(frame, image=photo)
+    #     img_label.pack()
+    #     name_label = tk.Label(frame, text=row[2])  # assuming the third column contains the name of the plant
+    #     name_label.pack()
+    #     desc_label = tk.Label(frame, text=row[3])  # assuming the fourth column contains a description of the plant
+    #     desc_label.pack()
+    #     frame.pack()
+
     # ############ Frame 1 ############
     # frame1 = tk.Frame(root, bg='DarkSeaGreen2', width=350, height=150)
     # frame1.grid(row=0, column=0, padx=5, pady=5, sticky='nsew')
