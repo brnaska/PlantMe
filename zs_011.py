@@ -548,15 +548,7 @@ def open_biljke():
     clearRoot(root)
     root.title(f'PyFloraPosuda - Biljke')
     root['bg'] = 'DarkSeaGreen2'
-    root.geometry('900x500')
-    
-    dodajButton=Button(root, text="Dodaj biljku",width=15, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=dodaj_biljku).place(x=750, y=150)
-def open_biljke():
-    clearRoot(root)
-    root.title(f'PyFloraPosuda - Biljke')
-    root['bg'] = 'DarkSeaGreen2'
     root.geometry('1000x500')
-
 
     # Create a Canvas widget and a Scrollbar widget
     canvas = tk.Canvas(root, bg="DarkSeaGreen2")
@@ -579,69 +571,42 @@ def open_biljke():
     # Create a cursor object
     cursor = conn.cursor()
 
-    # Execute a query to select all data from the "biljke" table
-    cursor.execute("SELECT * FROM Biljke")
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='Biljke'")
+    table_exists = cursor.fetchone() is not None
 
-    # Fetch all the results
-    plant_data = cursor.fetchall()
+    if table_exists:
+        # Execute a query to select all data from the "biljke" table
+        cursor.execute("SELECT * FROM Biljke")
+
+        # Fetch all the results
+        plant_data = cursor.fetchall()
+
+        # Create a list to hold the PlantCard objects
+        plant_cards = []
+
+        # Create a PlantCard object for each plant and add it to the list
+        for data in plant_data:
+            plant_card = PlantCard(plant_cards_frame, data[0], tk_instance=root)
+            plant_cards.append(plant_card)
+
+        # Arrange the PlantCard objects in two columns
+        row = 0
+        column = 0
+        for i, plant_card in enumerate(plant_cards):
+            plant_card.grid(row=row, column=column, padx=10, pady=10, sticky="nsew")
+            column += 1
+            if column == 2:
+                column = 0
+                row += 1
+
+        # Update the Scrollbar to match the size of the Canvas
+        canvas.update_idletasks()
+        canvas.configure(scrollregion=canvas.bbox("all"))
+    else:
+        dodaj_biljku
 
     # Close the database connection
     conn.close()
-
-    # Create a list to hold the PlantCard objects
-    plant_cards = []
-
-    # Create a PlantCard object for each plant and add it to the list
-    for data in plant_data:
-        plant_card = PlantCard(plant_cards_frame, data[0], tk_instance=root)
-        plant_cards.append(plant_card)
-
-    # Arrange the PlantCard objects in two columns
-    row = 0
-    column = 0
-    for i, plant_card in enumerate(plant_cards):
-        plant_card.grid(row=row, column=column, padx=10, pady=10, sticky="nsew")
-        column += 1
-        if column == 2:
-            column = 0
-            row += 1
-
-    # Update the Scrollbar to match the size of the Canvas
-    canvas.update_idletasks()
-    canvas.configure(scrollregion=canvas.bbox("all"))
-
-
-    # ############ Frame 1 ############
-    # frame1 = tk.Frame(root, bg='DarkSeaGreen2', width=350, height=150)
-    # frame1.grid(row=0, column=0, padx=5, pady=5, sticky='nsew')
-
-    # image1 = Image.open(r'Slike/Biljke/Orhideja.jpg')
-    # image1 = image1.resize((150, 150), Image.ANTIALIAS)
-    # biljka1 = ImageTk.PhotoImage(image1)
-    # labelB1 = tk.Label(frame1, image=biljka1, bg='DarkSeaGreen2')
-    # labelB1.place(x=0, y=0)
-
-    # tegla1 = Image.open(r'Slike\Posude\Promjer12cm.jpg')
-    # tegla1R = tegla1.resize((70, 70), Image.ANTIALIAS)
-    # tegla1N = ImageTk.PhotoImage(tegla1R)
-    # labelT1 = tk.Label(frame1, image=tegla1N, bg='DarkSeaGreen2')
-    # labelT1.place(x=210,y=50)
-
-    # oBiljka1_1='1. Biljka je Orhideja, nalazi se \nu tegli:'
-    # oBiljka1=tk.StringVar()
-    # oBiljka1.set(oBiljka1_1)
-    # oBiljka1L=tk.Label(frame1,textvariable=oBiljka1, font=('Segoe UI',10), bg='DarkSeaGreen2', justify='left')
-    # oBiljka1L.place(x=155,y=0)
-
-    # oStatus1_1=f'Status: OK'
-    # oStatus1=tk.StringVar()
-    # oStatus1.set(oStatus1_1)
-    # oStatus1L=tk.Label(frame1,textvariable=oStatus1, font=('Segoe UI',10), bg='DarkSeaGreen2', justify='left')
-    # oStatus1L.place(x=155,y=130)
-
-    # detalji1Button=Button(frame1, text="Detalji",width=7, font=('Helvetica bold',6), justify='right',bg='DarkSeaGreen2', command=open_detalji1)
-    # detalji1Button.place(x=300, y=130)
-    
 
     pocetnaButton=Button(root, text="Pocetna stranica",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_app).place(x=850, y=10)
     mojProfilButton=Button(root, text="Moj profil",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_profil).place(x=850, y=40)
