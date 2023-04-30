@@ -482,12 +482,41 @@ class PlantCard(tk.Frame):
         self.rowconfigure(0, weight=1)
         self.rowconfigure(1, weight=1)
 
-        photo = ImageTk.PhotoImage(self.photo)  # Convert to PhotoImage
-        self.image_label = tk.Label(self, image=photo, bg="white")
-        self.image_label.image = photo  # Save a reference to the PhotoImage to avoid garbage collection
-        self.image_label.grid(row=0, column=0, rowspan=2, padx=10, pady=10)
+        # Create a Canvas widget to display the plant image
+        self.canvas = tk.Canvas(self, width=150, height=150)
+        self.canvas.grid(row=0, column=0, rowspan=2, padx=10, pady=10)
+        self.photo = ImageTk.PhotoImage(self.photo)
+        self.canvas.create_image(0, 0, image=self.photo, anchor=tk.NW)
+
+        name_label = tk.Label(self, text=self.plant_name, font=("Arial", 14), bg="white")
+        name_label.grid(row=0, column=1, padx=10, pady=10, sticky="w")
+
+        pos_label = tk.Label(self, text=f"Position: {self.polozaj}", font=("Arial", 12), bg="white")
+        pos_label.grid(row=1, column=1, padx=10, pady=5, sticky="w")
+
+        temp_label = tk.Label(self, text=f"Temperature: {self.min_temp}°C - {self.max_temp}°C", font=("Arial", 12), bg="white")
+        temp_label.grid(row=2, column=1, padx=10, pady=5, sticky="w")
+
+        vlaz_label = tk.Label(self, text=f"Humidity: {self.min_vlaznost}% - {self.max_vlaznost}%", font=("Arial", 12), bg="white")
+        vlaz_label.grid(row=3, column=1, padx=10, pady=5, sticky="w")
+
+        svjet_label = tk.Label(self, text=f"Light: {self.min_svjetlost} - {self.max_svjetlost} lux", font=("Arial", 12), bg="white")
+        svjet_label.grid(row=4, column=1, padx=10, pady=5, sticky="w")
+
+        hrana_label = tk.Label(self, text=f"Nutrients: {self.min_hrana} - {self.max_hrana}", font=("Arial", 12), bg="white")
+        hrana_label.grid(row=5, column=1, padx=10, pady=5, sticky="w")
+
+        # Make sure the plant card widget expands to fill the width of the screen
+        self.columnconfigure(1, weight=1)
+
+        # Create a scrollbar and connect it to the Canvas widget
+        # scrollbar = tk.Scrollbar(self, orient="vertical", command=self.canvas.yview)
+        # scrollbar.grid(row=0, column=1, sticky="ns")
+        # self.canvas.configure(yscrollcommand=scrollbar.set)
 
 
+    def yview(self, *args):
+        self.canvas.yview(*args)
 
     def load_plant_data(self):
         # Retrieve plant data from the database using plantId
@@ -512,8 +541,7 @@ class PlantCard(tk.Frame):
         with open(self.photo_image, 'rb') as file:
             contents = file.read()
         self.photo = Image.open(io.BytesIO(contents))
-
-
+        self.photo = self.photo.resize((150, 150), Image.ANTIALIAS)
 
 
 def open_biljke():
@@ -523,21 +551,64 @@ def open_biljke():
     root.geometry('900x500')
     
     dodajButton=Button(root, text="Dodaj biljku",width=15, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=dodaj_biljku).place(x=750, y=150)
+def open_biljke():
+    clearRoot(root)
+    root.title(f'PyFloraPosuda - Biljke')
+    root['bg'] = 'DarkSeaGreen2'
+    root.geometry('1000x500')
+
+
+    # Create a Canvas widget and a Scrollbar widget
+    canvas = tk.Canvas(root, bg="DarkSeaGreen2")
+    scrollbar = tk.Scrollbar(root, orient="vertical", command=canvas.yview)
+
+    # Add the Scrollbar to the right side of the Canvas
+    canvas.configure(yscrollcommand=scrollbar.set)
+    scrollbar.pack(side="right", fill="y")
+
+    # Add the Canvas to the left side of the window
+    canvas.pack(side="left", fill="both", expand=True)
+
+    # Create a Frame to hold the PlantCard widgets inside the Canvas
+    plant_cards_frame = tk.Frame(canvas, bg="white")
+    canvas.create_window((0, 0), window=plant_cards_frame, anchor="nw")
 
     # Connect to the database
     conn = sqlite3.connect('Baza_podataka.db')
+
     # Create a cursor object
     cursor = conn.cursor()
+
     # Execute a query to select all data from the "biljke" table
-    cursor.execute("SELECT id FROM Biljke")
+    cursor.execute("SELECT * FROM Biljke")
 
-    # fetch all the results
-    plant_ids = cursor.fetchall()
+    # Fetch all the results
+    plant_data = cursor.fetchall()
 
-    # create and display PlantCard instances for each plant_id
-    for id in plant_ids:
-        plant_card = PlantCard(root, id[0], tk_instance=root)
-        plant_card.pack(side="top", fill="both", expand=True)
+    # Close the database connection
+    conn.close()
+
+    # Create a list to hold the PlantCard objects
+    plant_cards = []
+
+    # Create a PlantCard object for each plant and add it to the list
+    for data in plant_data:
+        plant_card = PlantCard(plant_cards_frame, data[0], tk_instance=root)
+        plant_cards.append(plant_card)
+
+    # Arrange the PlantCard objects in two columns
+    row = 0
+    column = 0
+    for i, plant_card in enumerate(plant_cards):
+        plant_card.grid(row=row, column=column, padx=10, pady=10, sticky="nsew")
+        column += 1
+        if column == 2:
+            column = 0
+            row += 1
+
+    # Update the Scrollbar to match the size of the Canvas
+    canvas.update_idletasks()
+    canvas.configure(scrollregion=canvas.bbox("all"))
 
 
     # ############ Frame 1 ############
@@ -572,11 +643,13 @@ def open_biljke():
     # detalji1Button.place(x=300, y=130)
     
 
-    pocetnaButton=Button(root, text="Pocetna stranica",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_app).place(x=750, y=10)
-    mojProfilButton=Button(root, text="Moj profil",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_profil).place(x=750, y=40)
-    posudeButton=Button(root, text="Posude",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_posude).place(x=750, y=70)
-    cancelButton=Button(root, text="Izlaz",width=15, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=quit).place(x=750, y=100)
-    
+    pocetnaButton=Button(root, text="Pocetna stranica",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_app).place(x=850, y=10)
+    mojProfilButton=Button(root, text="Moj profil",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_profil).place(x=850, y=40)
+    posudeButton=Button(root, text="Posude",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_posude).place(x=850, y=70)
+    cancelButton=Button(root, text="Izlaz",width=15, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=quit).place(x=850, y=100)
+
+    dodajButton=Button(root, text="Dodaj biljku",width=15, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=dodaj_biljku).place(x=850, y=150)
+     
     root.mainloop()
 
 ######################################## BUTTON POSUDE ###############################
