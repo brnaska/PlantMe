@@ -145,7 +145,6 @@ def open_detalji_biljka(id):
     with open(photo_image, 'rb') as file:
         contents = file.read()
     photo = Image.open(io.BytesIO(contents))
-<<<<<<< HEAD
     photo = photo.resize((150, 150), Image.ANTIALIAS)
 
     canvas = tk.Canvas(root, width=150, height=150)
@@ -156,21 +155,19 @@ def open_detalji_biljka(id):
     name_label = tk.Label(root, text=plant_name, font=("Arial", 14), bg="DarkSeaGreen2")
     name_label.grid(row=0, column=1, padx=10, pady=10, sticky="w")
 
-    pos_label = tk.Label(root, text=f"Position: {polozaj}", font=("Arial", 12), bg="DarkSeaGreen2")
+    pos_label = tk.Label(root, text=f"Pozicija: {polozaj}", font=("Arial", 12), bg="DarkSeaGreen2")
     pos_label.grid(row=1, column=1, padx=10, pady=5, sticky="w")
 
-    temp_label = tk.Label(root, text=f"Temperature: {min_temp}°C - {max_temp}°C", font=("Arial", 12), bg="DarkSeaGreen2")
+    temp_label = tk.Label(root, text=f"Temperatura: {min_temp}°C - {max_temp}°C", font=("Arial", 12), bg="DarkSeaGreen2")
     temp_label.grid(row=2, column=1, padx=10, pady=5, sticky="w")
 
-    vlaz_label = tk.Label(root, text=f"Humidity: {min_vlaznost}% - {max_vlaznost}%", font=("Arial", 12), bg="DarkSeaGreen2")
+    vlaz_label = tk.Label(root, text=f"Vlaznost: {min_vlaznost}% - {max_vlaznost}%", font=("Arial", 12), bg="DarkSeaGreen2")
     vlaz_label.grid(row=3, column=1, padx=10, pady=5, sticky="w")
 
-    svjet_label = tk.Label(root, text=f"Light: {min_svjetlost} - {max_svjetlost} lux", font=("Arial", 12), bg="DarkSeaGreen2")
+    svjet_label = tk.Label(root, text=f"Svjetlo: {min_svjetlost} - {max_svjetlost} lux", font=("Arial", 12), bg="DarkSeaGreen2")
     svjet_label.grid(row=4, column=1, padx=10, pady=5, sticky="w")
-<<<<<<< HEAD
-=======
 
-    hrana_label = tk.Label(root, text=f"Nutrients: {min_hrana} - {max_hrana}\n\n", font=("Arial", 12), bg="DarkSeaGreen2")
+    hrana_label = tk.Label(root, text=f"Hrana: {min_hrana} - {max_hrana}\n\n", font=("Arial", 12), bg="DarkSeaGreen2")
     hrana_label.grid(row=5, column=1, padx=10, pady=5, sticky="w")
 
     detaljiButton = tk.Button(root, text="Promjena podataka", width=15, font=('Helvetica bold', 10), justify='center', bg='DarkSeaGreen2', anchor=tk.S, command=lambda: biljka_promjena_podataka(id))
@@ -295,7 +292,6 @@ def biljka_promjena_podataka(id):
 
 def biljka_brisanje(id):
     quit
->>>>>>> 39ac44013eab182c62caff121fa1a200a8c38b33
 
     hrana_label = tk.Label(root, text=f"Nutrients: {min_hrana} - {max_hrana}\n\n", font=("Arial", 12), bg="DarkSeaGreen2")
     hrana_label.grid(row=5, column=1, padx=10, pady=5, sticky="w")
@@ -717,7 +713,7 @@ def dodaj_biljku():
 
     root.mainloop()
 
-#########################################  BUTTON BILJKE   ##################################
+###################### SLAGANJE STRANICE BILJKE ############## 
 class PlantCard(tk.Frame):
     def __init__(self, parent, plantId, tk_instance):
         self.photo = None
@@ -727,6 +723,7 @@ class PlantCard(tk.Frame):
         self.load_plant_data()
         self.create_widgets()
 
+    #################### KREIRENJE WIDGETA --> BILJKE #########
     def create_widgets(self):
         # SLIKA BILJKE
         self.columnconfigure(0, weight=1)
@@ -745,19 +742,19 @@ class PlantCard(tk.Frame):
         name_label = tk.Label(self, text=self.plant_name, font=("Arial", 14), bg='DarkSeaGreen2')
         name_label.grid(row=0, column=1, padx=10, pady=10, sticky="w")
 
-        pos_label = tk.Label(self, text=f"Position: {self.polozaj}", font=("Arial", 12), bg='DarkSeaGreen2')
+        pos_label = tk.Label(self, text=f"Pozicija: {self.polozaj}", font=("Arial", 12), bg='DarkSeaGreen2')
         pos_label.grid(row=1, column=1, padx=10, pady=5, sticky="w")
 
-        temp_label = tk.Label(self, text=f"Temperature: {self.min_temp}°C - {self.max_temp}°C", font=("Arial", 12), bg='DarkSeaGreen2')
+        temp_label = tk.Label(self, text=f"Temperatura: {self.min_temp}°C - {self.max_temp}°C", font=("Arial", 12), bg='DarkSeaGreen2')
         temp_label.grid(row=2, column=1, padx=10, pady=5, sticky="w")
 
-        vlaz_label = tk.Label(self, text=f"Humidity: {self.min_vlaznost}% - {self.max_vlaznost}%", font=("Arial", 12), bg='DarkSeaGreen2')
+        vlaz_label = tk.Label(self, text=f"Vlaznost: {self.min_vlaznost}% - {self.max_vlaznost}%", font=("Arial", 12), bg='DarkSeaGreen2')
         vlaz_label.grid(row=3, column=1, padx=10, pady=5, sticky="w")
 
-        svjet_label = tk.Label(self, text=f"Light: {self.min_svjetlost} - {self.max_svjetlost} lux", font=("Arial", 12), bg='DarkSeaGreen2')
+        svjet_label = tk.Label(self, text=f"Svjetlost: {self.min_svjetlost} - {self.max_svjetlost} lux", font=("Arial", 12), bg='DarkSeaGreen2')
         svjet_label.grid(row=4, column=1, padx=10, pady=5, sticky="w")
 
-        hrana_label = tk.Label(self, text=f"Nutrients: {self.min_hrana} - {self.max_hrana}", font=("Arial", 12), bg='DarkSeaGreen2')
+        hrana_label = tk.Label(self, text=f"Hrana: {self.min_hrana} - {self.max_hrana}", font=("Arial", 12), bg='DarkSeaGreen2')
         hrana_label.grid(row=5, column=1, padx=10, pady=5, sticky="w")
 
         # PROVJERITI SIRI LI SE WIDGET S KARTICOM BILJKE KAKO BI ISPUNIO SIRINU ZASLONA
@@ -772,8 +769,9 @@ class PlantCard(tk.Frame):
     def yview(self, *args):
         self.canvas.yview(*args)
 
+    ############## DOHVACANJE PODATAKA IZ BAZE --> BILJKE #######
     def load_plant_data(self):
-        # DOHVACANJE PODATAKA O BILJCI PREKO ID-a
+        # DOHVACANJE PODATAKA PREKO ID-a
         conn = sqlite3.connect('Baza_podataka.db')
         c = conn.cursor()
         c.execute("SELECT * FROM Biljke WHERE id=?", (self.plantId,))
@@ -797,7 +795,7 @@ class PlantCard(tk.Frame):
         self.photo = Image.open(io.BytesIO(contents))
         self.photo = self.photo.resize((150, 150), Image.ANTIALIAS)
 
-
+#########################################  BUTTON BILJKE   ##################################
 def open_biljke():
     clearRoot(root)
     root.title(f'PyFloraPosuda - Biljke')
@@ -815,9 +813,9 @@ def open_biljke():
 
     # FEAME NA CANVASU
     plant_cards_frame = tk.Frame(canvas, bg="DarkSeaGreen2")
-=======
-    # Create a Frame to hold the PlantCard widgets inside the Canvas
-    plant_cards_frame = tk.Frame(canvas, bg="white")
+
+    # KRAIRATI FRAME KOJI CE ZADRZATI PlantCard UNUTAR CANVASA
+    plant_cards_frame = tk.Frame(canvas, bg="DarkSeaGreen2")
     canvas.create_window((0, 0),window=plant_cards_frame, anchor="nw")
 
     # POVLACENJE BAZE PODATAKA
