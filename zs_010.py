@@ -16,7 +16,7 @@ mojaappsat=now.strftime("%H:%M:%S")
 urljson=f'https://api.tutiempo.net/json/?lan=en&apid=zwDX4azaz4X4Xqs&ll=43.51436051979722,16.444448215112512'
 response=urlopen(urljson)
 data_json=json.loads(response.read())
-#print(data_json)
+print(data_json)
 
 root = tk.Tk()
 root.title(f'PyFloraPosuda aplikacija - Prijava')
