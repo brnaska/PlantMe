@@ -387,6 +387,9 @@ def spremi_promjene():
 
 def promijeni_sliku():
     quit
+
+def biljku_u_posudu():
+    quit
     
 ###################### BOTUN DODAVANJA BILJKE --> SLIKA, POSUDA, SPREMI ##############
 def dodaj_sliku():
@@ -408,10 +411,6 @@ def dodaj_sliku():
                 dodajSlikuClicked = False
         except FileNotFoundError:
             print("File not found!")
-
-
-def biljku_u_posudu():
-    quit
 
 def spremi_biljku(unosimeBiljke, unospolozajBiljke, unosmintemp, unosmaxtemp, unosminVlaznost, unosmaxVlaznost, unosminSvjetlost, unosmaxSvjetlost, unosminHrana, unosmaxHrana, file_path):
     global spremiClicked
@@ -722,6 +721,9 @@ def open_detalji_posuda(id):
     name_label = tk.Label(root, text=pot_name, font=("Arial", 14), bg="DarkSeaGreen2")
     name_label.grid(row=0, column=1, padx=10, pady=10, sticky="w")
 
+    syncSenzorButton=Button(root, text="Sync senzor",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', anchor=tk.S, command=sync_senzor)
+    syncSenzorButton.grid(row=1, column=1, pady=(0, 10))
+
     promjenaButton = tk.Button(root, text="Promjena podataka", width=15, font=('Helvetica bold', 10), justify='center', bg='DarkSeaGreen2', anchor=tk.S, command=lambda: posuda_promjena_podataka(id))
     promjenaButton.grid(row=6, column=0, pady=(0, 10))
 
@@ -854,42 +856,14 @@ def spremi_posudu(unosimePosude, file_path):
         switchClicked()
 
 def sync_senzor():
-    vlaga = random.randrange(30,70)
-    oSenzorV1=f'Senzor Vlage:\t\t{vlaga} %'
-    oSenzorV=tk.StringVar()
-    oSenzorV.set(oSenzorV1)
-    oSenzorVL=tk.Label(root,textvariable=oSenzorV, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oSenzorVL.place(x=20,y=170)
-
-    svjetlost = random.randrange(2500,6500)
-    oSenzorS1=f'Senzor Svjetla:\t\t{svjetlost} K'
-    oSenzorS=tk.StringVar()
-    oSenzorS.set(oSenzorS1)
-    oSenzorSL=tk.Label(root,textvariable=oSenzorS, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oSenzorSL.place(x=20,y=205)
-
-    hrana = random.randrange(0,100)
-    oSenzorH1=f'Senzor Hrane:\t\t{hrana} %'
-    oSenzorH=tk.StringVar()
-    oSenzorH.set(oSenzorH1)
-    oSenzorHL=tk.Label(root,textvariable=oSenzorH, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oSenzorHL.place(x=20,y=240)
-
-    temperatura = random.randrange(15,30)
-    oSenzorT1=f'Senzor temperature:\t{temperatura} °C'
-    oSenzorT=tk.StringVar()
-    oSenzorT.set(oSenzorT1)
-    oSenzorTL=tk.Label(root,textvariable=oSenzorT, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oSenzorTL.place(x=20,y=275)
-    
     create_table_query= '''CREATE TABLE IF NOT EXISTS Senzori(
                                 id INTEGER PRIMARY KEY,
-                                dan TEXT NOT NULL,
-                                sat TEXT NOT NULL,
-                                vlaga TEXT NOT NULL,
+                                dan INTEGER NOT NULL,
+                                sat INTEGER NOT NULL,
+                                vlaga INTEGER NOT NULL,
                                 svjetlost INTEGER NOT NULL,
                                 hrana INTEGER NOT NULL,
-                                temeperatura INTEGER NOT NULL);'''
+                                temperatura INTEGER NOT NULL);'''
     database_name='Baza_podataka.db'
 
     try:
@@ -908,8 +882,39 @@ def sync_senzor():
             sqliteConnection.close()
             print('SQLite verzija je zatvorena.')
 
-    insert_into_table_query='''INSERT INTO Senzori (mojaappdan, mojaappsat, vlaga, svjetlost, hrana, temperatura)    
-                                VALUES (?,?,?,?,?,?)'''
+    for i in range(10):
+        value = i * 2
+        vlaga = random.randrange(40, 90)
+        svjetlost = random.randrange(3500, 6500)
+        hrana = random.randrange(70, 100)
+        temperatura = random.randrange(18, 28)
+
+        oSenzorV1=f'Senzor Vlage:\t{vlaga} %'
+        oSenzorV=tk.StringVar()
+        oSenzorV.set(oSenzorV1)
+        oSenzorVL=tk.Label(root,textvariable=oSenzorV, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+        oSenzorVL.grid(row=2, column=0, padx=10, pady=10, sticky="w")
+
+        oSenzorS1=f'Senzor Svjetla:\t{svjetlost} K'
+        oSenzorS=tk.StringVar()
+        oSenzorS.set(oSenzorS1)
+        oSenzorSL=tk.Label(root,textvariable=oSenzorS, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+        oSenzorSL.grid(row=3, column=0, padx=10, pady=10, sticky="w")
+
+        oSenzorH1=f'Senzor Hrane:\t{hrana} %'
+        oSenzorH=tk.StringVar()
+        oSenzorH.set(oSenzorH1)
+        oSenzorHL=tk.Label(root,textvariable=oSenzorH, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+        oSenzorHL.grid(row=4, column=0, padx=10, pady=10, sticky="w")
+
+        oSenzorT1=f'Senzor temperature: {temperatura} °C'
+        oSenzorT=tk.StringVar()
+        oSenzorT.set(oSenzorT1)
+        oSenzorTL=tk.Label(root,textvariable=oSenzorT, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+        oSenzorTL.grid(row=5, column=0, padx=10, pady=10, sticky="w")
+
+        insert_into_table_query='''INSERT INTO Senzori (dan, sat, vlaga, svjetlost, hrana, temperatura)    
+                                    VALUES (?,?,?,?,?,?)'''
                 
     try:
         sqliteConnection=sqlite3.connect(database_name)
@@ -944,36 +949,34 @@ def dodaj_posudu():
     unosimePosude.place(x=150, y=70)
     vrijednostSenzora=tk.Label(root,text="Vrijednost senzora:", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=110)
     
-    def sync_senzor():
-        vlaga = random.randrange(30,70)
-        oSenzorV1=f'Senzor Vlage:\t\t{vlaga} %'
-        oSenzorV=tk.StringVar()
-        oSenzorV.set(oSenzorV1)
-        oSenzorVL=tk.Label(root,textvariable=oSenzorV, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-        oSenzorVL.place(x=20,y=170)
+    vlaga = random.randrange(30,70)
+    oSenzorV1=f'Senzor Vlage:\t\t{vlaga} %'
+    oSenzorV=tk.StringVar()
+    oSenzorV.set(oSenzorV1)
+    oSenzorVL=tk.Label(root,textvariable=oSenzorV, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+    oSenzorVL.place(x=20,y=170)
 
-        svjetlost = random.randrange(2500,6500)
-        oSenzorS1=f'Senzor Svjetla:\t\t{svjetlost} K'
-        oSenzorS=tk.StringVar()
-        oSenzorS.set(oSenzorS1)
-        oSenzorSL=tk.Label(root,textvariable=oSenzorS, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-        oSenzorSL.place(x=20,y=205)
+    svjetlost = random.randrange(2500,6500)
+    oSenzorS1=f'Senzor Svjetla:\t\t{svjetlost} K'
+    oSenzorS=tk.StringVar()
+    oSenzorS.set(oSenzorS1)
+    oSenzorSL=tk.Label(root,textvariable=oSenzorS, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+    oSenzorSL.place(x=20,y=205)
 
-        hrana = random.randrange(0,100)
-        oSenzorH1=f'Senzor Hrane:\t\t{hrana} %'
-        oSenzorH=tk.StringVar()
-        oSenzorH.set(oSenzorH1)
-        oSenzorHL=tk.Label(root,textvariable=oSenzorH, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-        oSenzorHL.place(x=20,y=240)
+    hrana = random.randrange(0,100)
+    oSenzorH1=f'Senzor Hrane:\t\t{hrana} %'
+    oSenzorH=tk.StringVar()
+    oSenzorH.set(oSenzorH1)
+    oSenzorHL=tk.Label(root,textvariable=oSenzorH, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+    oSenzorHL.place(x=20,y=240)
 
-        temperatura = random.randrange(15,30)
-        oSenzorT1=f'Senzor temperature:\t{temperatura} °C'
-        oSenzorT=tk.StringVar()
-        oSenzorT.set(oSenzorT1)
-        oSenzorTL=tk.Label(root,textvariable=oSenzorT, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-        oSenzorTL.place(x=20,y=275)
+    temperatura = random.randrange(15,30)
+    oSenzorT1=f'Senzor temperature:\t{temperatura} °C'
+    oSenzorT=tk.StringVar()
+    oSenzorT.set(oSenzorT1)
+    oSenzorTL=tk.Label(root,textvariable=oSenzorT, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+    oSenzorTL.place(x=20,y=275)
 
-    syncSenzorButton=Button(root, text="Sync senzor",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=sync_senzor).place(x=200, y=110)
     dodajSlikuButton=Button(root, text="Dodaj sliku",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=dodaj_sliku_posude).place(x=20, y=380)
     dodajBiljkuButton=Button(root, text="Dodaj biljku",width=10, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=dodaj_biljku_posudi).place(x=110, y=380)
     spremiButton=Button(root, text="Spremi",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command= lambda:[switchClicked(), spremi_posudu(unosimePosude, file_path) ]).place(x=200, y=380)
