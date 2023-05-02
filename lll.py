@@ -2,6 +2,7 @@ import io
 import tkinter as tk
 from tkinter import *
 from tkinter import filedialog
+from tkinter import ttk
 import urllib.request
 from PIL import Image, ImageTk
 from urllib.request import urlopen
@@ -375,13 +376,13 @@ def dodaj_sliku():
         try:
             with open(file_path, 'rb') as file:
                 contents = file.read()
-                biljka = Image.open(io.BytesIO(contents))
-                biljkaR = biljka.resize((150, 150), Image.ANTIALIAS)
-                biljkaN = ImageTk.PhotoImage(biljkaR)
-                label = tk.Label(root, image=biljkaN, bg='DarkSeaGreen2')
-                label.image = biljkaN
+                photo = Image.open(io.BytesIO(contents))
+                photo = photo.resize((150, 150), Image.ANTIALIAS)
+                photo = ImageTk.PhotoImage(photo)
+                label = tk.Label(root, image=photo, bg='DarkSeaGreen2')
+                label.image = photo
                 label.place(x=500, y=30)
-                label.config(image=biljkaN)
+                label.config(image=photo)
                 dodajSlikuClicked = False
         except FileNotFoundError:
             print("File not found!")
@@ -678,11 +679,14 @@ def open_detalji_posuda(id):
     c = conn.cursor()
     c.execute("SELECT * FROM Posude WHERE id=?", (id,))
     pot_data = c.fetchone()
+    c.execute("SELECT * FROM Biljke WHERE id=?", (pot_data[2],))
+    plant_data = c.fetchone()
     conn.close()
 
     # DODAVANJE ATRIBUTA NA PODATKE O POSUDAMA
     pot_name = pot_data[1]
-    photo_image = pot_data[2]
+    pot_plantId = pot_data[2]
+    photo_image = pot_data[3]
     with open(photo_image, 'rb') as file:
         contents = file.read()
     photo = Image.open(io.BytesIO(contents))
@@ -698,6 +702,9 @@ def open_detalji_posuda(id):
 
     syncSenzorButton=Button(root, text="Sync senzor",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', anchor=tk.S, command=sync_senzor)
     syncSenzorButton.grid(row=1, column=1, pady=(0, 10))
+
+    name_label = tk.Label(root, text=plant_data[1], font=("Arial", 14), bg="DarkSeaGreen2")
+    name_label.grid(row=4, column=1, padx=10, pady=10, sticky="w")
 
     promjenaButton = tk.Button(root, text="Promjena podataka", width=15, font=('Helvetica bold', 10), justify='center', bg='DarkSeaGreen2', anchor=tk.S, command=lambda: posuda_promjena_podataka(id))
     promjenaButton.grid(row=6, column=0, pady=(0, 10))
@@ -725,9 +732,11 @@ def posuda_promjena_podataka(id):
     conn.close()
 
     # DODAVANJE ATRIBUTA PODACIMA O POSUDAMA
+    pot_id = pot_data[0]
     pot_name = pot_data[1]
-    file_path = pot_data[2]
-    with open(file_path, 'rb') as file:
+    plant_id = pot_data[2]
+    photo_image = pot_data[3]
+    with open(photo_image, 'rb') as file:
         contents = file.read()
     photo = Image.open(io.BytesIO(contents))
     photo = photo.resize((150, 150), Image.ANTIALIAS)
@@ -739,13 +748,13 @@ def posuda_promjena_podataka(id):
 
     name_label = tk.Label(root, text=pot_name, font=("Arial", 14), bg="DarkSeaGreen2")
     name_label.grid(row=0, column=1, padx=10, pady=10, sticky="w")
-    unos_name = EntryWithPlaceholder(root, pot_name, color="black")
-    unos_name.grid(row=0, column=2, padx=10, pady=5)
+    unos_nameP = EntryWithPlaceholder(root, pot_name, color="black")
+    unos_nameP.grid(row=0, column=2, padx=10, pady=5)
 
     promijeniSlikuButton = tk.Button(root, text="Ucitaj novu sliku", width=15, font=('Helvetica bold', 10), justify='center', bg='DarkSeaGreen2', anchor=tk.S, command=promijeni_sliku)
     promijeniSlikuButton.grid(row=6, column=1)
 
-    spremiButton = tk.Button(root, text="Spremi", width=15, font=('Helvetica bold', 10), justify='center', bg='DarkSeaGreen2', anchor=tk.S, command=spremi_promjene_posude(id, unos_name, file_path))
+    spremiButton = tk.Button(root, text="Spremi", width=15, font=('Helvetica bold', 10), justify='center', bg='DarkSeaGreen2', anchor=tk.S, command=lambda:spremi_promjene_posude(pot_id, unos_nameP, file_path))
     spremiButton.grid(row=6, column=0)
 
     root.mainloop()
@@ -775,28 +784,8 @@ def spremi_promjene_posude(posuda_id, unosPosuda, file_path):
 
     
 ###################### BOTUN DODAVANJA POSUDE --> SLIKA, POSUDA, SPREMI ##############
-def dodaj_sliku_posude():
-    global dodajSlikuClicked
-    global file_path
-    file_path = filedialog.askopenfilename()
-    dodajSlikuClicked = True
-    if dodajSlikuClicked:
-        try:
-            with open(file_path, 'rb') as file:
-                contents = file.read()
-                posuda = Image.open(io.BytesIO(contents))
-                posudaR = posuda.resize((150, 150), Image.ANTIALIAS)
-                posudaN = ImageTk.PhotoImage(posudaR)
-                label = tk.Label(root, image=posudaN, bg='DarkSeaGreen2')
-                label.image = posudaN
-                label.place(x=500, y=30)
-                label.config(image=posudaN)
-                dodajSlikuClicked = False
-        except FileNotFoundError:
-            print("File not found!")
 
-
-def spremi_posudu(unosimePosude, file_path):
+def spremi_posudu(unosimePosude, idBiljka, file_path):
     global spremiClicked
     if(spremiClicked == True):
         unosimePosude_db = unosimePosude.get()
@@ -804,6 +793,7 @@ def spremi_posudu(unosimePosude, file_path):
         create_table_query= '''CREATE TABLE IF NOT EXISTS Posude(
                                     id INTEGER PRIMARY KEY,
                                     unosimePosude_db TEXT NOT NULL,
+                                    idBiljka INTEGER NOT NULL DEFAULT 999,
                                     file_path STRING NOT NULL DEFAULT 0);'''
         database_name='Baza_podataka.db'
 
@@ -823,14 +813,14 @@ def spremi_posudu(unosimePosude, file_path):
                 sqliteConnection.close()
                 print('SQLite verzija je zatvorena.')
 
-        insert_into_table_query='''INSERT INTO Posude (unosimePosude_db, file_path)    
-                                    VALUES (?,?)'''
+        insert_into_table_query='''INSERT INTO Posude (unosimePosude_db, idBiljka, file_path)    
+                                    VALUES (?,?,?)'''
             
         try:
             sqliteConnection=sqlite3.connect(database_name)
             cursor=sqliteConnection.cursor()
             print(f'SQLite baza {database_name} je kreirana i spojena')
-            cursor.execute(insert_into_table_query, (unosimePosude_db, file_path))
+            cursor.execute(insert_into_table_query, (unosimePosude_db, idBiljka, file_path))
             sqliteConnection.commit()
             cursor.close()
             print('CURSOR otpusten')
@@ -925,23 +915,49 @@ def dodaj_posudu():
     global dodajSlikuClicked
     global spremiClicked
     global file_path
-    spremi_list_P = []
     clearRoot(root)
     root.title(f'PyFloraPosuda - Dodaj Posudu')
     root['bg'] = 'DarkSeaGreen2'
     root.geometry('900x500')
 
-    naslovPosude=tk.Label(root,text="Unos nove posude", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=145, y=20)
-    imePosude=tk.Label(root,text="Ime posude", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=70)
-    unosimePosude = Entry(root,show="",width=20, font=('Calibri', 15))
+    naslovPosude = tk.Label(root, text="Unos nove posude", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=145, y=20)
+    imePosude = tk.Label(root, text="Ime posude", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=70)
+    unosimePosude = Entry(root, show="", width=20, font=('Calibri', 15))
     unosimePosude.place(x=150, y=70)
-    vrijednostSenzora=tk.Label(root,text="Vrijednost senzora:", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=110)
-    
-    vlaga = random.randrange(30,70)
-    oSenzorV1=f'Senzor Vlage:\t\t{vlaga} %'
-    oSenzorV=tk.StringVar()
+
+    conn = sqlite3.connect('Baza_podataka.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='Biljke'")
+    table_exists = cursor.fetchone()
+    plant_list_name = []
+    if table_exists:
+        cursor.execute("SELECT * FROM Biljke")
+        # DOHVACANJE REZULTATA
+        plant_data = cursor.fetchall()
+        # CREIRANJE LISTE ZA DODAVANJE BILJAKA U POSUDE --> PlantList
+        plant_list_id = []
+        # CREIRANJE PlantCard-a ZA SVAKU BILJKU I DODAVANJE NA LISTU
+        plant_list_name = []
+        for data in plant_data:
+            print(data)
+            plant_list_id.append(data[0])
+            plant_list_name.append(data[1])
+
+    def save_posuda():
+        selected_plant_index = odabranaBiljka.current()
+        selected_plant_id = plant_list_id[selected_plant_index]
+        spremi_posudu(unosimePosude, selected_plant_id, file_path)
+
+    biljka = tk.Label(root, text="Dodaj biljku", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=90)
+    odabranaBiljka = ttk.Combobox(root, values=plant_list_name)
+    odabranaBiljka.place(x=150, y=90)
+
+    vrijednostSenzora = tk.Label(root, text="Vrijednost senzora:", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=110)
+    vlaga = random.randrange(30, 70)
+    oSenzorV1 = f'Senzor Vlage:\t\t{vlaga} %'
+    oSenzorV = tk.StringVar()
     oSenzorV.set(oSenzorV1)
-    oSenzorVL=tk.Label(root,textvariable=oSenzorV, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+    oSenzorVL = tk.Label(root, textvariable=oSenzorV, font=('Segoe UI', 15), bg='DarkSeaGreen2', justify='left')
     oSenzorVL.place(x=20,y=170)
 
     svjetlost = random.randrange(2500,6500)
@@ -965,9 +981,8 @@ def dodaj_posudu():
     oSenzorTL=tk.Label(root,textvariable=oSenzorT, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
     oSenzorTL.place(x=20,y=275)
 
-    dodajSlikuButton=Button(root, text="Dodaj sliku",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=dodaj_sliku_posude).place(x=20, y=380)
-    dodajBiljkuButton=Button(root, text="Dodaj biljku",width=10, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=dodaj_biljku_posudi).place(x=110, y=380)
-    spremiButton=Button(root, text="Spremi",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command= lambda:[switchClicked(), spremi_posudu(unosimePosude, file_path) ]).place(x=200, y=380)
+    dodajSlikuButton=Button(root, text="Dodaj sliku",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=dodaj_sliku).place(x=20, y=380)
+    spremiButton=Button(root, text="Spremi",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command= lambda:[switchClicked(), save_posuda() ]).place(x=200, y=380)
 
     pocetnaButton=Button(root, text="Pocetna stranica",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_app).place(x=750, y=10)
     mojProfilButton=Button(root, text="Moj profil",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_profil).place(x=750, y=40)
@@ -1029,7 +1044,8 @@ class PotCard(tk.Frame):
 
         # POSTAVITI ATRIBUTE ZA PODATKE O POSUDAMA
         self.pot_name = pot_data[1]
-        self.photo_image = pot_data[2]
+        self.plant_id = pot_data[2]
+        self.photo_image = pot_data[3]
         with open(self.photo_image, 'rb') as file:
             contents = file.read()
         self.photo = Image.open(io.BytesIO(contents))
