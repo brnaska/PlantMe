@@ -644,6 +644,10 @@ def open_biljke():
 #################################### DETALJI --> POSUDE ####################################
 def open_detalji_posuda(id):
     clearRoot(root)
+    root.title(f'PyFloraPosuda - Posude')
+    root['bg'] = 'DarkSeaGreen2'
+    root.geometry('1000x650')
+
     pocetnaButton=Button(root, text="Pocetna stranica",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_app).place(x=850, y=10)
     mojProfilButton=Button(root, text="Moj profil",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_profil).place(x=850, y=40)
     biljkeButton=Button(root, text="Biljke",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_biljke).place(x=850, y=70)
@@ -694,41 +698,90 @@ def open_detalji_posuda(id):
 
     root.mainloop()
 
+canvas=None
+
 ######################## GRAFOVI --> SENZOR ###########
 def line_graph():
+    for widget in root.grid_slaves():
+        if int(widget.grid_info()["row"]) == 2:
+            widget.grid_forget()
     conn = sqlite3.connect('Baza_podataka.db')
     cur = conn.cursor()
     cur.execute('SELECT * FROM Senzori ORDER BY id DESC LIMIT 10;')
     data = cur.fetchall()
 
-    # DOHVACANJE X I X VARIJABLI
+    # DOHVACANJE X I Y VARIJABLI
     x = [row[0] for row in data]  # VRIJEME
     y = [row[5] for row in data]  # SENZOR
 
-    print(x)
-    print(Y)
-
     # CREIRANJE LINE GRAFA
-    fig = plt.Figure(figsize=(8, 3), dpi=100)
+    fig = plt.Figure(figsize=(8, 4), dpi=100)
     ax = fig.add_subplot(111)
-    plt.plot(x, y)
-    plt.xlabel('Timestamp')
-    plt.ylabel('Sensor Value')
-    plt.title('Last 10 Sensor Readings')
-    ax.grid(True)
-    #ax.set_xlim([70,100])
-    #ax.set_ylim([0,100])
+    ax.plot(x, y)
+    ax.set_xlabel('Vrijeme')
+    ax.set_ylabel('Hrana')
+    ax.set_title('Senzor hrane')
 
-    canvas = FigureCanvasTkAgg(fig, master=root)
-    canvas.get_tk_widget().grid(row=2, column=2, columnspan=2)
+    canvas_line = FigureCanvasTkAgg(fig, master=root)
+    canvas_line.draw()
+    canvas_line.get_tk_widget().grid(row=2, column=2, columnspan=2)
 
     conn.close()
 
 def pie_graph():
-    quit
-def histo_graph():
-    quit
+    for widget in root.grid_slaves():
+        if int(widget.grid_info()["row"]) == 2:
+            widget.grid_forget()
+    conn = sqlite3.connect('Baza_podataka.db')
+    cur = conn.cursor()
+    cur.execute('SELECT * FROM Senzori ORDER BY id DESC LIMIT 10;')
+    data = cur.fetchall()
 
+    x = [row[0] for row in data] 
+    y = [row[5] for row in data]  # DOHVACANJE VRIJEDNOSTI
+
+    # KREIRANJE PIE
+    less_than_80 = [value for value in y if value < 80]
+    between_80_90 = [value for value in y if 80 <= value < 90]
+    greater_than_90 = [value for value in y if value >= 90]
+
+    labels = ['Less than 80', 'Between 80 and 90', 'Greater than 90']
+    sizes = [len(less_than_80), len(between_80_90), len(greater_than_90)]
+    
+    fig = plt.Figure(figsize=(6, 3), dpi=100)
+    fig, ax = plt.subplots()
+    ax.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90)
+    ax.axis('equal')
+    ax.set_title('Senzor hrane')
+
+    canvas_pie = FigureCanvasTkAgg(fig, master=root)
+    canvas_pie.draw()
+    canvas_pie.get_tk_widget().grid(row=2, column=2, columnspan=2)
+
+    conn.close()
+
+def histo_graph():
+    for widget in root.grid_slaves():
+        if int(widget.grid_info()["row"]) == 2:
+            widget.grid_forget()
+    conn = sqlite3.connect('Baza_podataka.db')
+    cur = conn.cursor()
+    cur.execute('SELECT * FROM Senzori ORDER BY id DESC LIMIT 10;')
+    data = cur.fetchall()
+
+    y = [row[5] for row in data]
+
+    fig, ax = plt.subplots()
+    ax.hist(y, bins=10)
+    ax.set_xlabel('Vrijednost senzora')
+    ax.set_ylabel('Frekvencija')
+    ax.set_title('Senzor hrane')
+
+    canvas_histo = FigureCanvasTkAgg(fig, master=root)
+    canvas_histo.draw()
+    canvas_histo.get_tk_widget().grid(row=2, column=2, columnspan=2)
+
+    conn.close()
 
 ################### PROMJENA PODATAKA POSUDE ###############
 def posuda_promjena_podataka(id):
@@ -904,25 +957,25 @@ def sync_senzor():
         oSenzorV=tk.StringVar()
         oSenzorV.set(oSenzorV1)
         oSenzorVL=tk.Label(root,textvariable=oSenzorV, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-        oSenzorVL.place(x=190,y=40)
+        oSenzorVL.place(x=190,y=35)
 
         oSenzorS1=f'Senzor Svjetla:\t{svjetlost} K'
         oSenzorS=tk.StringVar()
         oSenzorS.set(oSenzorS1)
         oSenzorSL=tk.Label(root,textvariable=oSenzorS, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-        oSenzorSL.place(x=190,y=75)
+        oSenzorSL.place(x=190,y=70)
 
         oSenzorH1=f'Senzor Hrane:\t{hrana} %'
         oSenzorH=tk.StringVar()
         oSenzorH.set(oSenzorH1)
         oSenzorHL=tk.Label(root,textvariable=oSenzorH, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-        oSenzorHL.place(x=190,y=110)
+        oSenzorHL.place(x=190,y=105)
 
         oSenzorT1=f'Senzor temperature: {temperatura} °C'
         oSenzorT=tk.StringVar()
         oSenzorT.set(oSenzorT1)
         oSenzorTL=tk.Label(root,textvariable=oSenzorT, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-        oSenzorTL.place(x=190,y=145)
+        oSenzorTL.place(x=190,y=140)
 
         insert_into_table_query='''INSERT INTO Senzori (dan, sat, vlaga, svjetlost, hrana, temperatura)    
                                     VALUES (?,?,?,?,?,?)'''
