@@ -9,10 +9,10 @@ import json
 import sqlite3
 from datetime import date, datetime
 import random
-#from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-#from matplotlib.figure import Figure
-#from matplotlib import pyplot as plt
-#import numpy as np
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.figure import Figure
+from matplotlib import pyplot as plt
+import numpy as np
 spremiClicked = False
 file_path = ""
 dodajSlikuClicked = False
@@ -671,19 +671,64 @@ def open_detalji_posuda(id):
     canvas.create_image(0, 0, image=photo, anchor=tk.NW)
 
     name_label = tk.Label(root, text=pot_name, font=("Arial", 14), bg="DarkSeaGreen2")
-    name_label.grid(row=0, column=1, padx=10, pady=10, sticky="w")
+    name_label.place(x=200, y=10)
 
     syncSenzorButton=Button(root, text="Sync senzor",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', anchor=tk.S, command=sync_senzor)
-    syncSenzorButton.grid(row=1, column=1, pady=(0, 10))
+    syncSenzorButton.place(x=10,y=190)
 
     promjenaButton = tk.Button(root, text="Promjena podataka", width=15, font=('Helvetica bold', 10), justify='center', bg='DarkSeaGreen2', anchor=tk.S, command=lambda: posuda_promjena_podataka(id))
-    promjenaButton.grid(row=6, column=0, pady=(0, 10))
+    promjenaButton.place(x=10,y=220)
 
     izbrisiButton = tk.Button(root, text="Izbrisi posudu", width=15, font=('Helvetica bold', 10), justify='center', bg='DarkSeaGreen2', anchor=tk.S, command=lambda: posuda_brisanje(id))
-    izbrisiButton.grid(row=6, column=1, pady=(0, 10))
+    izbrisiButton.place(x=10,y=250)
 
+    graph_label = tk.Label(root, text='Grafovi', font=("Arial", 14), bg="DarkSeaGreen2")
+    graph_label.place(x=10, y=310)
+
+    lineGraphButton=Button(root, text="Line",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', anchor=tk.S, command=line_graph)
+    lineGraphButton.place(x=10,y=340)
+    pieGraphButton=Button(root, text="Pie",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', anchor=tk.S, command=pie_graph)
+    pieGraphButton.place(x=10,y=370)
+    histoGraphButton=Button(root, text="Histo",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', anchor=tk.S, command=histo_graph)
+    histoGraphButton.place(x=10,y=400)
 
     root.mainloop()
+
+######################## GRAFOVI --> SENZOR ###########
+def line_graph():
+    conn = sqlite3.connect('Baza_podataka.db')
+    cur = conn.cursor()
+    cur.execute('SELECT * FROM Senzori ORDER BY id DESC LIMIT 10;')
+    data = cur.fetchall()
+
+    # DOHVACANJE X I X VARIJABLI
+    x = [row[0] for row in data]  # VRIJEME
+    y = [row[5] for row in data]  # SENZOR
+
+    print(x)
+    print(Y)
+
+    # CREIRANJE LINE GRAFA
+    fig = plt.Figure(figsize=(8, 3), dpi=100)
+    ax = fig.add_subplot(111)
+    plt.plot(x, y)
+    plt.xlabel('Timestamp')
+    plt.ylabel('Sensor Value')
+    plt.title('Last 10 Sensor Readings')
+    ax.grid(True)
+    #ax.set_xlim([70,100])
+    #ax.set_ylim([0,100])
+
+    canvas = FigureCanvasTkAgg(fig, master=root)
+    canvas.get_tk_widget().grid(row=2, column=2, columnspan=2)
+
+    conn.close()
+
+def pie_graph():
+    quit
+def histo_graph():
+    quit
+
 
 ################### PROMJENA PODATAKA POSUDE ###############
 def posuda_promjena_podataka(id):
@@ -702,6 +747,7 @@ def posuda_promjena_podataka(id):
     conn.close()
 
     # DODAVANJE ATRIBUTA PODACIMA O POSUDAMA
+    pot_id = pot_data[0]
     pot_name = pot_data[1]
     photo_image = pot_data[2]
     with open(photo_image, 'rb') as file:
@@ -716,13 +762,13 @@ def posuda_promjena_podataka(id):
 
     name_label = tk.Label(root, text=pot_name, font=("Arial", 14), bg="DarkSeaGreen2")
     name_label.grid(row=0, column=1, padx=10, pady=10, sticky="w")
-    unos_name = EntryWithPlaceholder(root, pot_name, color="black")
-    unos_name.grid(row=0, column=2, padx=10, pady=5)
+    unos_nameP = EntryWithPlaceholder(root, pot_name, color="black")
+    unos_nameP.grid(row=0, column=2, padx=10, pady=5)
 
     promijeniSlikuButton = tk.Button(root, text="Ucitaj novu sliku", width=15, font=('Helvetica bold', 10), justify='center', bg='DarkSeaGreen2', anchor=tk.S, command=promijeni_sliku_posude)
     promijeniSlikuButton.grid(row=6, column=1)
 
-    spremiButton = tk.Button(root, text="Spremi", width=15, font=('Helvetica bold', 10), justify='center', bg='DarkSeaGreen2', anchor=tk.S, command=spremi_promjene_posude)
+    spremiButton = tk.Button(root, text="Spremi", width=15, font=('Helvetica bold', 10), justify='center', bg='DarkSeaGreen2', anchor=tk.S, command=lambda:spremi_promjene_posude(pot_id, unos_nameP))
     spremiButton.grid(row=6, column=0)
 
     root.mainloop()
@@ -737,9 +783,18 @@ def posuda_brisanje(id):
 def dodaj_biljku_posudi():
     quit
 
-def spremi_promjene_posude():
-    quit
+def spremi_promjene_posude(pot_id, unos_nameP):
+    global spremiClicked
+    unosimePosude_new = unos_nameP.get()
+    
+    #SPAJANJE NA DB
+    conn = sqlite3.connect('Baza_podataka.db')
+    c = conn.cursor()
 
+    # UPDATE DB
+    c.execute(f"UPDATE Posude SET unosimePosude_db = '{unosimePosude_new}' WHERE id = '{pot_id}'")
+    conn.commit()
+    conn.close()
 def promijeni_sliku_posude():
     quit
     
@@ -849,25 +904,25 @@ def sync_senzor():
         oSenzorV=tk.StringVar()
         oSenzorV.set(oSenzorV1)
         oSenzorVL=tk.Label(root,textvariable=oSenzorV, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-        oSenzorVL.grid(row=2, column=0, padx=10, pady=10, sticky="w")
+        oSenzorVL.place(x=190,y=40)
 
         oSenzorS1=f'Senzor Svjetla:\t{svjetlost} K'
         oSenzorS=tk.StringVar()
         oSenzorS.set(oSenzorS1)
         oSenzorSL=tk.Label(root,textvariable=oSenzorS, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-        oSenzorSL.grid(row=3, column=0, padx=10, pady=10, sticky="w")
+        oSenzorSL.place(x=190,y=75)
 
         oSenzorH1=f'Senzor Hrane:\t{hrana} %'
         oSenzorH=tk.StringVar()
         oSenzorH.set(oSenzorH1)
         oSenzorHL=tk.Label(root,textvariable=oSenzorH, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-        oSenzorHL.grid(row=4, column=0, padx=10, pady=10, sticky="w")
+        oSenzorHL.place(x=190,y=110)
 
         oSenzorT1=f'Senzor temperature: {temperatura} °C'
         oSenzorT=tk.StringVar()
         oSenzorT.set(oSenzorT1)
         oSenzorTL=tk.Label(root,textvariable=oSenzorT, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-        oSenzorTL.grid(row=5, column=0, padx=10, pady=10, sticky="w")
+        oSenzorTL.place(x=190,y=145)
 
         insert_into_table_query='''INSERT INTO Senzori (dan, sat, vlaga, svjetlost, hrana, temperatura)    
                                     VALUES (?,?,?,?,?,?)'''
@@ -1076,8 +1131,6 @@ def open_posude():
     dodajButton=Button(root, text="Dodaj posudu",width=15, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=dodaj_posudu).place(x=850, y=150)
      
     root.mainloop()
-
-
 
 
 ####################################### VREMENSKA PROGNOZA ##########################################
