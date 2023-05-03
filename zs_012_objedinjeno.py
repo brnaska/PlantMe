@@ -986,11 +986,12 @@ def spremi_posudu(unosimePosude, idBiljka, file_path):
     global spremiClicked
     if(spremiClicked == True):
         unosimePosude_db = unosimePosude.get()
-        
+        idBiljka = 999 if idBiljka is None else idBiljka
+
         create_table_query= '''CREATE TABLE IF NOT EXISTS Posude(
                                     id INTEGER PRIMARY KEY,
                                     unosimePosude_db TEXT NOT NULL,
-                                    idBiljka INTEGER NOT NULL DEFAULT 999,
+                                    idBiljka INTEGER DEFAULT NULL,
                                     file_path STRING NOT NULL DEFAULT 0);'''
         database_name='Baza_podataka.db'
 
@@ -1148,8 +1149,11 @@ def dodaj_posudu():
 
     def save_posuda():
         selected_plant_index = odabranaBiljka.current()
-        selected_plant_id = plant_list_id[selected_plant_index]
-        spremi_posudu(unosimePosude, selected_plant_id, file_path)
+        if selected_plant_index == 0: 
+            selected_plant_id = None
+        else:
+            selected_plant_id = plant_list_id[selected_plant_index - 1]
+            spremi_posudu(unosimePosude, selected_plant_id, file_path)
 
     biljka = tk.Label(root, text="Dodaj biljku", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=100)
     odabranaBiljka = ttk.Combobox(root, values=plant_list_name)
