@@ -26,8 +26,8 @@ def switchClicked():
         spremiClicked = True
 
 now=datetime.now()
-mojaappdan=now.strftime("%d.%m.%Y.")
-mojaappsat=now.strftime("%H:%M:%S")
+dan=now.strftime("%d.%m.%Y.")
+sat=now.strftime("%H:%M:%S")
 
 urljson=f'https://api.tutiempo.net/json/?lan=en&apid=zwDX4azaz4X4Xqs&ll=43.51436051979722,16.444448215112512'
 response=urlopen(urljson)
@@ -699,7 +699,7 @@ def open_detalji_posuda(id):
     name_label = tk.Label(root, text=pot_name, font=("Arial", 14), bg="DarkSeaGreen2")
     name_label.place(x=200, y=10)
 
-    syncSenzorButton=Button(root, text="Sync senzor",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', anchor=tk.S, command=sync_senzor)
+    syncSenzorButton=Button(root, text="Sync senzor",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', anchor=tk.S, command=lambda: sync_senzor(id,))
     syncSenzorButton.place(x=10,y=190)
 
     name_label = tk.Label(root, text='Posadena biljka:', font=("Arial", 14), bg="DarkSeaGreen2").place(x=350, y=10)
@@ -715,29 +715,29 @@ def open_detalji_posuda(id):
     graph_label = tk.Label(root, text='Grafovi', font=("Arial", 14), bg="DarkSeaGreen2")
     graph_label.place(x=10, y=310)
 
-    lineGraphButton=Button(root, text="Line",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', anchor=tk.S, command=line_graph)
+    lineGraphButton=Button(root, text="Line",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', anchor=tk.S, command=lambda: line_graph(id,))
     lineGraphButton.place(x=10,y=340)
-    pieGraphButton=Button(root, text="Pie",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', anchor=tk.S, command=pie_graph)
+    pieGraphButton=Button(root, text="Pie",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', anchor=tk.S, command=lambda: pie_graph(id,))
     pieGraphButton.place(x=10,y=370)
-    histoGraphButton=Button(root, text="Histo",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', anchor=tk.S, command=histo_graph)
+    histoGraphButton=Button(root, text="Histo",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', anchor=tk.S, command=lambda: histo_graph(id,))
     histoGraphButton.place(x=10,y=400)
 
     root.mainloop()
 
 ######################## GRAFOVI --> SENZOR ###########
 canvas=None
-def line_graph():
+def line_graph(id,):
     for widget in root.grid_slaves():
         if int(widget.grid_info()["row"]) == 2:
             widget.grid_forget()
     conn = sqlite3.connect('Baza_podataka.db')
     cur = conn.cursor()
-    cur.execute('SELECT * FROM Senzori ORDER BY id DESC LIMIT 10;')
+    cur.execute('SELECT * FROM Senzori WHERE idPosuda = ? ORDER BY id DESC LIMIT 10;', (id,))
     data = cur.fetchall()
 
     # DOHVACANJE X I Y VARIJABLI
     x = [row[0] for row in data]  # VRIJEME
-    y = [row[5] for row in data]  # SENZOR
+    y = [row[6] for row in data]  # SENZOR
 
     # CREIRANJE LINE GRAFA
     fig = plt.Figure(figsize=(8, 4), dpi=100)
@@ -753,17 +753,17 @@ def line_graph():
 
     conn.close()
 
-def pie_graph():
+def pie_graph(id,):
     for widget in root.grid_slaves():
         if int(widget.grid_info()["row"]) == 2:
             widget.grid_forget()
     conn = sqlite3.connect('Baza_podataka.db')
     cur = conn.cursor()
-    cur.execute('SELECT * FROM Senzori ORDER BY id DESC LIMIT 10;')
+    cur.execute('SELECT * FROM Senzori WHERE idPosuda = ? ORDER BY id DESC LIMIT 10;', (id,))
     data = cur.fetchall()
 
     x = [row[0] for row in data] 
-    y = [row[5] for row in data]  # DOHVACANJE VRIJEDNOSTI
+    y = [row[6] for row in data]  # DOHVACANJE VRIJEDNOSTI
 
     # KREIRANJE PIE
     less_than_80 = [value for value in y if value < 80]
@@ -785,16 +785,16 @@ def pie_graph():
 
     conn.close()
 
-def histo_graph():
+def histo_graph(id,):
     for widget in root.grid_slaves():
         if int(widget.grid_info()["row"]) == 2:
             widget.grid_forget()
     conn = sqlite3.connect('Baza_podataka.db')
     cur = conn.cursor()
-    cur.execute('SELECT * FROM Senzori ORDER BY id DESC LIMIT 10;')
+    cur.execute('SELECT * FROM Senzori WHERE idPosuda = ? ORDER BY id DESC LIMIT 10;', (id,))
     data = cur.fetchall()
 
-    y = [row[5] for row in data]
+    y = [row[6] for row in data]
 
     fig, ax = plt.subplots()
     ax.hist(y, bins=10)
@@ -958,9 +958,17 @@ def spremi_posudu(unosimePosude, idBiljka, file_path):
         switchClicked()
         open_posude()
 
-def sync_senzor():
+def sync_senzor(id,):
+    conn = sqlite3.connect('Baza_podataka.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM Posude WHERE id=?", (id,))
+    pot_data = c.fetchone()
+    conn.close()
+    pot_id = pot_data[0]
+
     create_table_query= '''CREATE TABLE IF NOT EXISTS Senzori(
                                 id INTEGER PRIMARY KEY,
+                                idPosuda INTEGER NOT NULL DEFAULT 999,
                                 dan INTEGER NOT NULL,
                                 sat INTEGER NOT NULL,
                                 vlaga INTEGER NOT NULL,
@@ -1016,14 +1024,14 @@ def sync_senzor():
         oSenzorTL=tk.Label(root,textvariable=oSenzorT, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
         oSenzorTL.place(x=190,y=140)
 
-        insert_into_table_query='''INSERT INTO Senzori (dan, sat, vlaga, svjetlost, hrana, temperatura)    
-                                    VALUES (?,?,?,?,?,?)'''
+        insert_into_table_query='''INSERT INTO Senzori (idPosuda, dan, sat, vlaga, svjetlost, hrana, temperatura)    
+                                    VALUES (?,?,?,?,?,?,?)'''
                 
     try:
         sqliteConnection=sqlite3.connect(database_name)
         cursor=sqliteConnection.cursor()
         print(f'SQLite baza {database_name} je kreirana i spojena')
-        cursor.execute(insert_into_table_query, (mojaappdan, mojaappsat, vlaga, svjetlost, hrana, temperatura))
+        cursor.execute(insert_into_table_query, (pot_id, dan, sat, vlaga, svjetlost, hrana, temperatura))
         sqliteConnection.commit()
         cursor.close()
         print('CURSOR otpusten')
