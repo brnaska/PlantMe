@@ -551,6 +551,76 @@ class PlantCard(tk.Frame):
         hrana_label = tk.Label(self, text=f"Hrana: {self.min_hrana} - {self.max_hrana}", font=("Arial", 12), bg='DarkSeaGreen2')
         hrana_label.grid(row=5, column=1, padx=10, pady=5, sticky="w")
 
+        ###### STATUS ######
+        conn = sqlite3.connect('Baza_podataka.db')
+        cur = conn.cursor()
+        cur.execute('SELECT * FROM Biljke WHERE id = ?', (self.plantId,))
+        data_plant = cur.fetchone()
+        cur.execute('SELECT * FROM Posude WHERE idBiljka = ? ORDER BY id DESC LIMIT 1', (self.plantId,))
+        data_pot = cur.fetchone()
+        id_Posude = data_pot[0]
+        cur.execute('SELECT * FROM Senzori WHERE idPosuda = ? ORDER BY id DESC LIMIT 1;', (id_Posude,))
+        data_senzor = cur.fetchone()
+        print(data_senzor)
+
+        #vlaga_senzor = data_senzor[4]
+        vlaga_senzor = int(data_senzor[4])
+        #svjetlost_senzor = data_senzor[5]
+        svjetlost_senzor = int(data_senzor[5])
+        #hrana_senzor = data_senzor[6]
+        hrana_senzor = int(data_senzor[6])
+        #temperatura_senzor = data_senzor[7]
+        temperatura_senzor = int(data_senzor[7])
+
+        temperatura_min_senzor = int(data_plant[3])
+        temperatura_max_senzor = int(data_plant[4])
+        vlaga_min_senzor = int(data_plant[5])
+        vlaga_max_senzor = int(data_plant[6])
+        svjetlost_min_senzor = int(data_plant[7])
+        svjetlost_max_senzor = int(data_plant[8])
+        hrana_min_senzor = int(data_plant[9])
+        hrana_max_senzor = int(data_plant[10])
+
+        if vlaga_senzor>vlaga_min_senzor and vlaga_senzor<vlaga_max_senzor:
+            vlaga_label = tk.Label(self, text="Vlaga je OK!", font=("Arial", 10), bg='DarkSeaGreen2')
+            vlaga_label.place(x=20, y=170)
+        elif vlaga_senzor<vlaga_min_senzor:
+            vlaga_label = tk.Label(self, text="Zaliti biljku!", font=("Arial", 10), bg='DarkSeaGreen2')
+            vlaga_label.place(x=20, y=170)
+        elif vlaga_senzor>vlaga_max_senzor:
+            vlaga_label = tk.Label(self, text="Previse vode!", font=("Arial", 10), bg='DarkSeaGreen2')
+            vlaga_label.place(x=20, y=170)
+    
+        if svjetlost_senzor>svjetlost_min_senzor and svjetlost_senzor<svjetlost_max_senzor:
+            svjetlost_label = tk.Label(self, text="Svjetlost je OK!", font=("Arial", 10), bg='DarkSeaGreen2')
+            svjetlost_label.place(x=20, y=190)
+        elif svjetlost_senzor<svjetlost_min_senzor:
+            svjetlost_label = tk.Label(self, text="Premjestiti na svjetlo!", font=("Arial", 10), bg='DarkSeaGreen2')
+            svjetlost_label.place(x=20, y=190)
+        elif svjetlost_senzor>svjetlost_max_senzor:
+            svjetlost_label = tk.Label(self, text="Premjestiti u tamu!", font=("Arial", 10), bg='DarkSeaGreen2')
+            svjetlost_label.place(x=20, y=190)
+        
+        if hrana_senzor>hrana_min_senzor and hrana_senzor<hrana_max_senzor:
+            hrana_label = tk.Label(self, text="Hrana je OK!", font=("Arial", 10), bg='DarkSeaGreen2')
+            hrana_label.place(x=20, y=210)
+        elif hrana_senzor<hrana_min_senzor:
+            hrana_label = tk.Label(self, text="Dodati hranu!", font=("Arial", 10), bg='DarkSeaGreen2')
+            hrana_label.place(x=20, y=210)
+        elif hrana_senzor>hrana_max_senzor:
+            hrana_label = tk.Label(self, text="Previse hrane!", font=("Arial", 10), bg='DarkSeaGreen2')
+            hrana_label.place(x=20, y=210)
+
+        if temperatura_senzor>temperatura_min_senzor and temperatura_senzor<temperatura_max_senzor:
+            temperatura_label = tk.Label(self, text="Temperatura je OK!", font=("Arial", 10), bg='DarkSeaGreen2')
+            temperatura_label.place(x=20, y=230)
+        elif temperatura_senzor<temperatura_min_senzor:
+            temperatura_label = tk.Label(self, text="Premjestiti na toplije!", font=("Arial", 10), bg='DarkSeaGreen2')
+            temperatura_label.place(x=20, y=230)
+        elif temperatura_senzor>temperatura_max_senzor:
+            temperatura_label = tk.Label(self, text="Premjestiti na hladnije!", font=("Arial", 10), bg='DarkSeaGreen2')
+            temperatura_label.place(x=20, y=230)
+
         # PROVJERITI SIRI LI SE WIDGET S KARTICOM BILJKE KAKO BI ISPUNIO SIRINU ZASLONA
         self.columnconfigure(1, weight=1)
 
