@@ -44,25 +44,21 @@ root.geometry('600x450')
 ############################### PRIJAVA --> AUTENTIFIKACIJA ##########################
 def authenticate(username, password):
     with open('Korisnici.txt', 'r') as f:
-        headers = f.readline().strip().split(' ')
-        username_idx = headers.index('Username')
-        password_idx = headers.index('Password')
-        for line in f:
-            values = line.strip().split(' ')
-            if username == values[username_idx] and password == values[password_idx]:
-                return True
-    return False
+        lines = file.readlines()
+        for i, line in enumerate(lines):
+            user_data = line.split()
+            if user_data[2] == username and user_data[3] == password:
+                return True, i
+        return False, -1
 bad_pass=Label(root, text='Pogresno korisnicko ime \nili lozinka!', font=('Calibri', 20), bg='DarkSeaGreen')
 def login():
-    Username = userName.get()
-    Password = password.get()
-    if authenticate(Username, Password):
-        print('Uspjesna autentifikacija!')
-        open_app()
-    else:
-        bad_pass.place(x=250, y=280)
-        bad_pass.after(3000, lambda:bad_pass.destroy())
-        clearEntry()
+    def submit():
+        authenticated, user_index = authenticate(username_entry.get(), password_entry.get())
+        if authenticated:
+            open_profil(user_index)  # Pass user index to open_profil function
+        else:
+            messagebox.showerror('Pogresni podaci', 'Pogresno korisnicko ime ili lozinka!')
+            clearEntry(username_entry, password_entry)
 
 
 ################################# CISCENJE EKRANA --> APLIKACIJA  ##########################
@@ -90,8 +86,7 @@ def spremi_promjene_profil(unos_ime, unos_prezime, unos_username, unos_password,
         file.writelines(lines)
 
 ################################### BUTTON --> MOJ PROFIL ####################################
-def open_profil():
-    user_index = 1
+def open_profil(user_index):
     clearRoot(root)
     root.title(f'PyFloraPosuda - Profil')
     root['bg'] = 'DarkSeaGreen2'
@@ -110,28 +105,28 @@ def open_profil():
         prezime = user_data[1]
         username = user_data[2]
         password = user_data[3]
-    
-        ime_label = tk.Label(root, text=f"Ime: ", font=('Calibri', 15), bg="DarkSeaGreen2").place(x=250, y=50)
-        unos_ime = Entry(root, font=('Calibri', 12),width=25, justify='center')
-        unos_ime.place(x=400, y=50)
-        unos_ime.insert(0, ime)
+        
+    ime_label = tk.Label(root, text=f"Ime: ", font=('Calibri', 15), bg="DarkSeaGreen2").place(x=250, y=50)
+    unos_ime = Entry(root, font=('Calibri', 12),width=25, justify='center')
+    unos_ime.place(x=400, y=50)
+    unos_ime.insert(0, ime)
 
-        prezime_label = tk.Label(root, text=f"Prezime: ", font=('Calibri', 15), bg="DarkSeaGreen2").place(x=250, y=90)
-        unos_prezime = Entry(root, font=('Calibri', 12),width=25, justify='center')
-        unos_prezime.place(x=400, y=90)
-        unos_prezime.insert(0, prezime)
+    prezime_label = tk.Label(root, text=f"Prezime: ", font=('Calibri', 15), bg="DarkSeaGreen2").place(x=250, y=90)
+    unos_prezime = Entry(root, font=('Calibri', 12),width=25, justify='center')
+    unos_prezime.place(x=400, y=90)
+    unos_prezime.insert(0, prezime)
 
-        username_label = tk.Label(root, text=f"Korisnicko ime: ", font=('Calibri', 15), bg="DarkSeaGreen2").place(x=250, y=130)
-        unos_username = Entry(root, font=('Calibri', 12),width=25, justify='center')
-        unos_username.place(x=400, y=130)
-        unos_username.insert(0, username)
+    username_label = tk.Label(root, text=f"Korisnicko ime: ", font=('Calibri', 15), bg="DarkSeaGreen2").place(x=250, y=130)
+    unos_username = Entry(root, font=('Calibri', 12),width=25, justify='center')
+    unos_username.place(x=400, y=130)
+    unos_username.insert(0, username)
 
-        password_label = tk.Label(root, text=f"Lozinka: ", font=('Calibri', 15), bg="DarkSeaGreen2").place(x=250, y=170)
-        unos_password = Entry(root, font=('Calibri', 12),width=25, justify='center')
-        unos_password.place(x=400, y=170)
-        unos_password.insert(0, password)
+    password_label = tk.Label(root, text=f"Lozinka: ", font=('Calibri', 15), bg="DarkSeaGreen2").place(x=250, y=170)
+    unos_password = Entry(root, font=('Calibri', 12),width=25, justify='center')
+    unos_password.place(x=400, y=170)
+    unos_password.insert(0, password)
 
-        spremiButton=Button(root, text="Spremi promjene",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=lambda: spremi_promjene_profil(unos_ime, unos_prezime, unos_username, unos_password,user_index)).place(x=370, y=220)
+    spremiButton=Button(root, text="Spremi promjene",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=lambda: spremi_promjene_profil(unos_ime, unos_prezime, unos_username, unos_password,user_index)).place(x=370, y=220)
 
     pocetnaButton=Button(root, text="Pocetna stranica",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_app).place(x=750, y=10)
     biljkeButton=Button(root, text="Biljke",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_biljke).place(x=750, y=40)
@@ -263,8 +258,6 @@ def spremi_promjene_biljke(plant_id, unos_name, unos_pozicija, unos_min_temp, un
     conn.commit()
     conn.close()
     open_biljke()
-        
-
 
 def promijeni_sliku():
     global photo, file_path
@@ -1143,6 +1136,7 @@ def dodaj_posudu():
         # CREIRANJE PlantCard-a ZA SVAKU BILJKU I DODAVANJE NA LISTU
         plant_list_name = []
         for data in plant_data:
+            print(data)
             plant_list_id.append(data[0])
             plant_list_name.append(data[1])
 
@@ -1325,7 +1319,7 @@ def open_posude():
 
 ####################################### VREMENSKA PROGNOZA ##########################################
 #####################################################################################################
-def open_app():
+def open_app(user_index):
     global data_json
     clearRoot(root)
     root.title(f'PyFloraPosuda - Vremenska prognoza')
@@ -1462,7 +1456,7 @@ def open_app():
     # label=Label(root, image=imgTlakN)
     # label.grid(column=1, row=4)
     
-    mojProfilButton=Button(root, text="Moj profil",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_profil).place(x=800, y=10)
+    mojProfilButton=Button(root, text="Moj profil",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_profil(user_index)).place(x=800, y=10)
     biljkeButton=Button(root, text="Biljke",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_biljke).place(x=800, y=40)
     posudeButton=Button(root, text="Posude",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_posude).place(x=800, y=70)
     cancelButton=Button(root, text="Izlaz",width=15, font=('Helvetica bold',10), justify='right',bg='DarkSeaGreen2', command=quit).place(x=800, y=100)
