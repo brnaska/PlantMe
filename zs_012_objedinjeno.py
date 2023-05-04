@@ -168,9 +168,11 @@ def open_detalji_biljka(id):
     max_vlaznost = plant_data[6]
     min_svjetlost = plant_data[7]
     max_svjetlost = plant_data[8]
-    min_hrana = plant_data[9]
-    max_hrana = plant_data[10]
-    photo_image = plant_data[11]
+    min_pH = plant_data[9]
+    max_pH = plant_data[10]
+    min_sal = plant_data[11]
+    max_sal = plant_data[12]
+    photo_image = plant_data[13]
     with open(photo_image, 'rb') as file:
         contents = file.read()
     photo = Image.open(io.BytesIO(contents))
@@ -196,14 +198,98 @@ def open_detalji_biljka(id):
     svjet_label = tk.Label(root, text=f"Svjetlo: {min_svjetlost} - {max_svjetlost} lux", font=("Arial", 12), bg="DarkSeaGreen2")
     svjet_label.grid(row=4, column=1, padx=10, pady=5, sticky="w")
 
-    hrana_label = tk.Label(root, text=f"Hrana: {min_hrana} - {max_hrana}\n\n", font=("Arial", 12), bg="DarkSeaGreen2")
-    hrana_label.grid(row=5, column=1, padx=10, pady=5, sticky="w")
+    pH_label = tk.Label(root, text=f"pH: {min_pH} - {max_pH}\n\n", font=("Arial", 12), bg="DarkSeaGreen2")
+    pH_label.grid(row=5, column=1, padx=10, pady=5, sticky="w")
+
+    sal_label = tk.Label(root, text=f"Salinitet: {min_sal} - {max_sal}\n\n", font=("Arial", 12), bg="DarkSeaGreen2")
+    sal_label.grid(row=6, column=1, padx=10, pady=5, sticky="w")
+
+    status_label = tk.Label(root, text="Zadnje stanje senzora:", font=("Arial", 14), bg="DarkSeaGreen2")
+    status_label.grid(row=0, column=3, padx=10, pady=10, sticky="w")
+    
+    conn = sqlite3.connect('Baza_podataka.db')
+    cur = conn.cursor()
+    cur.execute('SELECT * FROM Biljke WHERE id = ?', (id,))
+    data_plant = cur.fetchone()
+    if data_plant:
+        cur.execute("SELECT * FROM Posude")
+        exist_pot = cur.fetchone()
+        if exist_pot:
+            cur.execute('SELECT * FROM Posude WHERE idBiljka = ? ORDER BY id DESC', (id,))
+            data_pot = cur.fetchone()
+            if data_pot: 
+                id_Posude = data_pot[0]
+                cur.execute('SELECT * FROM Senzori WHERE idPosuda = ? ORDER BY id DESC LIMIT 1;', (id_Posude,))
+                data_senzor = cur.fetchone()
+                if data_senzor: 
+                    vlaga_senzor = int(data_senzor[4])
+                    svjetlost_senzor = int(data_senzor[5])
+                    pH_senzor = int(data_senzor[6])
+                    #salinitet_senzor = int(data_[7])
+                    temperatura_senzor = int(data_senzor[8])
+
+                    temperatura_min_senzor = int(data_plant[3])
+                    temperatura_max_senzor = int(data_plant[4])
+                    vlaga_min_senzor = int(data_plant[5])
+                    vlaga_max_senzor = int(data_plant[6])
+                    svjetlost_min_senzor = int(data_plant[7])
+                    svjetlost_max_senzor = int(data_plant[8])
+                    pH_min_senzor = int(data_plant[9])
+                    pH_max_senzor = int(data_plant[10])
+                    #sal_min_senzor = int(data_plant[11])
+                    #sal_max_senzor = int(data_plant[12])
+
+                    if vlaga_senzor>vlaga_min_senzor and vlaga_senzor<vlaga_max_senzor:
+                        vlaga_label = tk.Label(root, text="Vlaga je OK!", font=("Arial", 14), bg='DarkSeaGreen2')
+                        vlaga_label.grid(row=1, column=3, padx=10, pady=10, sticky="w")
+                    elif vlaga_senzor<vlaga_min_senzor:
+                        vlaga_label = tk.Label(root, text="Zaliti biljku!", font=("Arial", 14), bg='DarkSeaGreen2')
+                        vlaga_label.grid(row=1, column=3, padx=10, pady=10, sticky="w")
+                    elif vlaga_senzor>vlaga_max_senzor:
+                        vlaga_label = tk.Label(root, text="Previse vode!", font=("Arial", 14), bg='DarkSeaGreen2')
+                        vlaga_label.grid(row=1, column=3, padx=10, pady=10, sticky="w")
+                            
+                    if svjetlost_senzor>svjetlost_min_senzor and svjetlost_senzor<svjetlost_max_senzor:
+                        svjetlost_label = tk.Label(root, text="Svjetlost je OK!", font=("Arial", 14), bg='DarkSeaGreen2')
+                        svjetlost_label.grid(row=2, column=3, padx=10, pady=10, sticky="w")
+                    elif svjetlost_senzor<svjetlost_min_senzor:
+                        svjetlost_label = tk.Label(root, text="Premjestiti na svjetlo!", font=("Arial", 14), bg='DarkSeaGreen2')
+                        svjetlost_label.grid(row=2, column=3, padx=10, pady=10, sticky="w")
+                    elif svjetlost_senzor>svjetlost_max_senzor:
+                        svjetlost_label = tk.Label(root, text="Premjestiti u tamu!", font=("Arial", 14), bg='DarkSeaGreen2')
+                        svjetlost_label.grid(row=2, column=3, padx=10, pady=10, sticky="w")
+                                
+                    if pH_senzor>pH_min_senzor and pH_senzor<pH_max_senzor:
+                        pH_label = tk.Label(root, text="pH je OK!", font=("Arial", 14), bg='DarkSeaGreen2')
+                        pH_label.grid(row=3, column=3, padx=10, pady=10, sticky="w")
+                    elif pH_senzor<pH_min_senzor:
+                        pH_label = tk.Label(root, text="Dodati fosfata!", font=("Arial", 14), bg='DarkSeaGreen2')
+                        pH_label.grid(row=3, column=3, padx=10, pady=10, sticky="w")
+                    elif pH_senzor>pH_max_senzor:
+                        pH_label = tk.Label(root, text="Smanjiti fosfate!", font=("Arial", 14), bg='DarkSeaGreen2')
+                        pH_label.grid(row=3, column=3, padx=10, pady=10, sticky="w")
+
+                    if temperatura_senzor>temperatura_min_senzor and temperatura_senzor<temperatura_max_senzor:
+                        temperatura_label = tk.Label(root, text="Temperatura je OK!", font=("Arial", 14), bg='DarkSeaGreen2')
+                        temperatura_label.grid(row=4, column=3, padx=10, pady=10, sticky="w")
+                    elif temperatura_senzor<temperatura_min_senzor:
+                        temperatura_label = tk.Label(root, text="Premjestiti na toplije!", font=("Arial", 14), bg='DarkSeaGreen2')
+                        temperatura_label.grid(row=4, column=3, padx=10, pady=10, sticky="w")
+                    elif temperatura_senzor>temperatura_max_senzor:
+                        temperatura_label = tk.Label(root, text="Premjestiti na hladnije!", font=("Arial", 14), bg='DarkSeaGreen2')
+                        temperatura_label.grid(row=4, column=3, padx=10, pady=10, sticky="w")
+        else:
+            dodaj_posudu()                
+    else:
+        dodaj_biljku()
 
     promjenaButton = tk.Button(root, text="Promjena podataka", width=15, font=('Helvetica bold', 10), justify='center', bg='DarkSeaGreen2', anchor=tk.S, command=lambda: biljka_promjena_podataka(id))
-    promjenaButton.grid(row=6, column=0, pady=(0, 10))
+    promjenaButton.grid(row=7, column=0, pady=(0, 10))
 
     izbrisiButton = tk.Button(root, text="Izbrisi biljku", width=15, font=('Helvetica bold', 10), justify='center', bg='DarkSeaGreen2', anchor=tk.S, command=lambda: biljka_brisanje(id))
-    izbrisiButton.grid(row=6, column=1, pady=(0, 10))
+    izbrisiButton.grid(row=7, column=1, pady=(0, 10))
+
+
 
     root.mainloop()
 
@@ -242,7 +328,7 @@ def biljka_brisanje(id):
     conn.close()
     open_biljke()
 
-def spremi_promjene_biljke(plant_id, unos_name, unos_pozicija, unos_min_temp, unos_max_temp, unos_min_vlaznost, unos_max_vlaznost, unos_min_svjetlost, unos_max_svjetlost, unos_min_hrana, unos_max_hrana, file_path):
+def spremi_promjene_biljke(plant_id,unos_name, unos_pozicija, unos_min_temp, unos_max_temp, unos_min_vlaznost, unos_max_vlaznost, unos_min_svjetlost, unos_max_svjetlost, unos_min_pH, unos_max_pH, unos_min_sal, unos_max_sal, file_path):
     unosimeBiljke_new = unos_name.get()
     unospolozajBiljke_new = unos_pozicija.get()
     unosmintemp_new = unos_min_temp.get()
@@ -251,20 +337,20 @@ def spremi_promjene_biljke(plant_id, unos_name, unos_pozicija, unos_min_temp, un
     unosmaxVlaznost_new = unos_max_vlaznost.get()
     unosminSvjetlost_new = unos_min_svjetlost.get()
     unosmaxSvjetlost_new = unos_max_svjetlost.get()
-    unosminHrana_new = unos_min_hrana.get()
-    unosmaxHrana_new = unos_max_hrana.get()
+    unosminpH_new = unos_min_pH.get()
+    unosmaxpH_new = unos_max_pH.get()
+    unosminsal_new = unos_min_sal.get()
+    unosmaxsal_new = unos_max_sal.get()
     
     #SPAJANJE NA DB
     conn = sqlite3.connect('Baza_podataka.db')
     c = conn.cursor()
 
     # UPDATE DB
-    c.execute(f"UPDATE Biljke SET unosimeBiljke_db = '{unosimeBiljke_new}', unospolozajBiljke_db = '{unospolozajBiljke_new}', unosmintemp_db = '{unosmintemp_new}', unosmaxtemp_db = '{unosmaxtemp_new}', unosminVlaznost_db = '{unosminVlaznost_new}', unosmaxVlaznost_db = '{unosmaxVlaznost_new}', unosminSvjetlost_db = '{unosminSvjetlost_new}', unosmaxSvjetlost_db = '{unosmaxSvjetlost_new}', unosminHrana_db = '{unosminHrana_new}', unosmaxHrana_db = '{unosmaxHrana_new}' , file_path = '{file_path}' WHERE id = '{plant_id}'")
+    c.execute(f"UPDATE Biljke SET unosimeBiljke_db = '{unosimeBiljke_new}', unospolozajBiljke_db = '{unospolozajBiljke_new}', unosmintemp_db = '{unosmintemp_new}', unosmaxtemp_db = '{unosmaxtemp_new}', unosminVlaznost_db = '{unosminVlaznost_new}', unosmaxVlaznost_db = '{unosmaxVlaznost_new}', unosminSvjetlost_db = '{unosminSvjetlost_new}', unosmaxSvjetlost_db = '{unosmaxSvjetlost_new}', unosminpH_db = '{unosminpH_new}', unosmaxpH_db = '{unosmaxpH_new}' ,unosminSalinitet_db = '{unosminsal_new}', unosmaxSalinitet_db = '{unosmaxsal_new}' , file_path = '{file_path}' WHERE id = '{plant_id}'")
     conn.commit()
     conn.close()
     open_biljke()
-        
-
 
 def promijeni_sliku():
     global photo, file_path
@@ -304,7 +390,7 @@ def biljka_promjena_podataka(id):
     conn.close()
 
     # DODAVANJE STRIBUTA PODACIMA O BILJKAMA
-    plant_id = plant_data[0]
+    plant_id =plant_data[0]
     plant_name = plant_data[1]
     polozaj = plant_data[2]
     min_temp = plant_data[3]
@@ -313,9 +399,11 @@ def biljka_promjena_podataka(id):
     max_vlaznost = plant_data[6]
     min_svjetlost = plant_data[7]
     max_svjetlost = plant_data[8]
-    min_hrana = plant_data[9]
-    max_hrana = plant_data[10]
-    file_path = plant_data[11]
+    min_pH = plant_data[9]
+    max_pH = plant_data[10]
+    min_sal = plant_data[11]
+    max_sal = plant_data[12]
+    photo_image = plant_data[13]
     with open(file_path, 'rb') as file:
         contents = file.read()
     photo = Image.open(io.BytesIO(contents))
@@ -357,18 +445,25 @@ def biljka_promjena_podataka(id):
     unos_max_svjetlost = EntryWithPlaceholder(root, max_svjetlost, color="black")
     unos_max_svjetlost.grid(row=4, column=3, padx=10, pady=5)
 
-    hrana_label = tk.Label(root, text=f"Hrana: {min_hrana} - {max_hrana}", font=("Arial", 12), bg="DarkSeaGreen2")
-    hrana_label.grid(row=5, column=1, padx=10, pady=5, sticky="w")
-    unos_min_hrana = EntryWithPlaceholder(root, min_hrana, color="black")
-    unos_min_hrana.grid(row=5, column=2, padx=10, pady=5)
-    unos_max_hrana = EntryWithPlaceholder(root, max_hrana, color="black")
-    unos_max_hrana.grid(row=5, column=3, padx=10, pady=5)
+    pH_label = tk.Label(root, text=f"pH: {min_pH} - {max_pH}", font=("Arial", 12), bg="DarkSeaGreen2")
+    pH_label.grid(row=5, column=1, padx=10, pady=5, sticky="w")
+    unos_min_pH = EntryWithPlaceholder(root, min_pH, color="black")
+    unos_min_pH.grid(row=5, column=2, padx=10, pady=5)
+    unos_max_pH = EntryWithPlaceholder(root, max_pH, color="black")
+    unos_max_pH.grid(row=5, column=3, padx=10, pady=5)
+
+    sal_label = tk.Label(root, text=f"Salinitet: {min_sal} - {max_sal}", font=("Arial", 12), bg="DarkSeaGreen2")
+    sal_label.grid(row=6, column=1, padx=10, pady=5, sticky="w")
+    unos_min_sal = EntryWithPlaceholder(root, min_sal, color="black")
+    unos_min_sal.grid(row=6, column=2, padx=10, pady=5)
+    unos_max_sal = EntryWithPlaceholder(root, max_sal, color="black")
+    unos_max_sal.grid(row=6, column=3, padx=10, pady=5)
 
     promijeniSlikuButton = tk.Button(root, text="Ucitaj novu sliku", width=15, font=('Helvetica bold', 10), justify='center', bg='DarkSeaGreen2', anchor=tk.S, command=promijeni_sliku)
-    promijeniSlikuButton.grid(row=6, column=1)
+    promijeniSlikuButton.grid(row=7, column=3)
 
-    spremiButton = tk.Button(root, text="Spremi", width=15, font=('Helvetica bold', 10), justify='center', bg='DarkSeaGreen2', anchor=tk.S, command=lambda: spremi_promjene_biljke(plant_id,unos_name, unos_pozicija, unos_min_temp, unos_max_temp, unos_min_vlaznost, unos_max_vlaznost, unos_min_svjetlost, unos_max_svjetlost, unos_min_hrana, unos_max_hrana, file_path))
-    spremiButton.grid(row=6, column=0)
+    spremiButton = tk.Button(root, text="Spremi", width=15, font=('Helvetica bold', 10), justify='center', bg='DarkSeaGreen2', anchor=tk.S, command=lambda: spremi_promjene_biljke(plant_id,unos_name, unos_pozicija, unos_min_temp, unos_max_temp, unos_min_vlaznost, unos_max_vlaznost, unos_min_svjetlost, unos_max_svjetlost, unos_min_pH, unos_max_pH, unos_min_sal, unos_max_sal, file_path))
+    spremiButton.grid(row=7, column=2)
 
     root.mainloop()
         
@@ -393,7 +488,7 @@ def dodaj_sliku():
         except FileNotFoundError:
             print("File not found!")
 
-def spremi_biljku(unosimeBiljke, unospolozajBiljke, unosmintemp, unosmaxtemp, unosminVlaznost, unosmaxVlaznost, unosminSvjetlost, unosmaxSvjetlost, unosminHrana, unosmaxHrana, file_path):
+def spremi_biljku(unosimeBiljke, unospolozajBiljke, unosmintemp, unosmaxtemp, unosminVlaznost, unosmaxVlaznost, unosminSvjetlost, unosmaxSvjetlost, unosminpH, unosmaxpH, unosminSalinitet, unosmaxSalinitet, file_path):
     global spremiClicked
     if(spremiClicked == True):
         unosimeBiljke_db = unosimeBiljke.get()
@@ -404,8 +499,10 @@ def spremi_biljku(unosimeBiljke, unospolozajBiljke, unosmintemp, unosmaxtemp, un
         unosmaxVlaznost_db = unosmaxVlaznost.get()
         unosminSvjetlost_db = unosminSvjetlost.get()
         unosmaxSvjetlost_db = unosmaxSvjetlost.get()
-        unosminHrana_db = unosminHrana.get()
-        unosmaxHrana_db = unosmaxHrana.get()
+        unosminpH_db = unosminpH.get()
+        unosmaxpH_db = unosmaxpH.get()
+        unosminSalinitet_db = unosminSalinitet.get()
+        unosmaxSalinitet_db = unosmaxSalinitet.get()
         create_table_query= '''CREATE TABLE IF NOT EXISTS Biljke(
                                     id INTEGER PRIMARY KEY,
                                     unosimeBiljke_db TEXT NOT NULL,
@@ -416,8 +513,10 @@ def spremi_biljku(unosimeBiljke, unospolozajBiljke, unosmintemp, unosmaxtemp, un
                                     unosmaxVlaznost_db INTEGER NOT NULL,
                                     unosminSvjetlost_db INTEGER NOT NULL,
                                     unosmaxSvjetlost_db INTEGER NOT NULL,
-                                    unosminHrana_db INTEGER NOT NULL,
-                                    unosmaxHrana_db INTEGER NOT NULL,
+                                    unosminpH_db INTEGER NOT NULL,
+                                    unosmaxpH_db INTEGER NOT NULL,
+                                    unosminSalinitet_db INTEGER NOT NULL,
+                                    unosmaxSalinitet_db INTEGER NOT NULL,
                                     file_path STRING NOT NULL DEFAULT 0);'''
         database_name='Baza_podataka.db'
 
@@ -437,14 +536,14 @@ def spremi_biljku(unosimeBiljke, unospolozajBiljke, unosmintemp, unosmaxtemp, un
                 sqliteConnection.close()
                 print('SQLite verzija je zatvorena.')
 
-        insert_into_table_query='''INSERT INTO Biljke (unosimeBiljke_db, unospolozajBiljke_db, unosmintemp_db, unosmaxtemp_db, unosminVlaznost_db, unosmaxVlaznost_db, unosminSvjetlost_db, unosmaxSvjetlost_db, unosminHrana_db, unosmaxHrana_db, file_path)    
-                                    VALUES (?,?,?,?,?,?,?,?,?,?,?)'''
+        insert_into_table_query='''INSERT INTO Biljke (unosimeBiljke_db, unospolozajBiljke_db, unosmintemp_db, unosmaxtemp_db, unosminVlaznost_db, unosmaxVlaznost_db, unosminSvjetlost_db, unosmaxSvjetlost_db, unosminpH_db, unosmaxpH_db, unosminSalinitet_db, unosmaxSalinitet_db, file_path)    
+                                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)'''
             
         try:
             sqliteConnection=sqlite3.connect(database_name)
             cursor=sqliteConnection.cursor()
             print(f'SQLite baza {database_name} je kreirana i spojena')
-            cursor.execute(insert_into_table_query, (unosimeBiljke_db, unospolozajBiljke_db, unosmintemp_db, unosmaxtemp_db, unosminVlaznost_db, unosmaxVlaznost_db, unosminSvjetlost_db, unosmaxSvjetlost_db, unosminHrana_db, unosmaxHrana_db, file_path))
+            cursor.execute(insert_into_table_query, (unosimeBiljke_db, unospolozajBiljke_db, unosmintemp_db, unosmaxtemp_db, unosminVlaznost_db, unosmaxVlaznost_db, unosminSvjetlost_db, unosmaxSvjetlost_db, unosminpH_db, unosmaxpH_db, unosminSalinitet_db, unosmaxSalinitet_db, file_path))
             sqliteConnection.commit()
             cursor.close()
             print('CURSOR otpusten')
@@ -494,15 +593,21 @@ def dodaj_biljku():
     maxSvjetlost=tk.Label(root,text="Max. svjetlost K", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=250, y=270)
     unosmaxSvjetlost = Entry(root,show="",width=7, font=('Calibri', 15))
     unosmaxSvjetlost.place(x=390, y=270)
-    minHrana=tk.Label(root,text="Min. ishrana %", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=310)
-    unosminHrana = Entry(root,show="",width=7, font=('Calibri', 15))
-    unosminHrana.place(x=170, y=310)
-    maxHrana=tk.Label(root,text="Max. ishrana %", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=250, y=310)
-    unosmaxHrana = Entry(root,show="",width=7, font=('Calibri', 15))
-    unosmaxHrana.place(x=390, y=310)
+    minpH=tk.Label(root,text="Min. pH", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=310)
+    unosminpH = Entry(root,show="",width=7, font=('Calibri', 15))
+    unosminpH.place(x=170, y=310)
+    maxpH=tk.Label(root,text="Max. pH", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=250, y=310)
+    unosmaxpH = Entry(root,show="",width=7, font=('Calibri', 15))
+    unosmaxpH.place(x=390, y=310)
+    minSalinitet=tk.Label(root,text="Min. salinitet %", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=350)
+    unosminSalinitet = Entry(root,show="",width=7, font=('Calibri', 15))
+    unosminSalinitet.place(x=170, y=350)
+    maxSalinitet=tk.Label(root,text="Max. salinitet %", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=250, y=350)
+    unosmaxSalinitet = Entry(root,show="",width=7, font=('Calibri', 15))
+    unosmaxSalinitet.place(x=390, y=350)
 
-    dodajSlikuButton=Button(root, text="Dodaj sliku",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=dodaj_sliku).place(x=50, y=380)
-    spremiButton=Button(root, text="Spremi",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command= lambda:[switchClicked(), spremi_biljku(unosimeBiljke, unospolozajBiljke, unosmintemp, unosmaxtemp, unosminVlaznost, unosmaxVlaznost, unosminSvjetlost, unosmaxSvjetlost, unosminHrana, unosmaxHrana, file_path) ]).place(x=150, y=380)
+    dodajSlikuButton=Button(root, text="Dodaj sliku",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=dodaj_sliku).place(x=50, y=420)
+    spremiButton=Button(root, text="Spremi",width=10, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command= lambda:[switchClicked(), spremi_biljku(unosimeBiljke, unospolozajBiljke, unosmintemp, unosmaxtemp, unosminVlaznost, unosmaxVlaznost, unosminSvjetlost, unosmaxSvjetlost, unosminpH, unosmaxpH, unosminSalinitet, unosmaxSalinitet, file_path) ]).place(x=150, y=420)
 
     pocetnaButton=Button(root, text="Pocetna stranica",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_app).place(x=750, y=10)
     mojProfilButton=Button(root, text="Moj profil",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_profil).place(x=750, y=40)
@@ -553,77 +658,11 @@ class PlantCard(tk.Frame):
         svjet_label = tk.Label(self, text=f"Svjetlost: {self.min_svjetlost} - {self.max_svjetlost} lux", font=("Arial", 12), bg='DarkSeaGreen2')
         svjet_label.grid(row=4, column=1, padx=10, pady=5, sticky="w")
 
-        hrana_label = tk.Label(self, text=f"Hrana: {self.min_hrana} - {self.max_hrana}", font=("Arial", 12), bg='DarkSeaGreen2')
-        hrana_label.grid(row=5, column=1, padx=10, pady=5, sticky="w")
+        ph_label = tk.Label(self, text=f"pH: {self.min_pH} - {self.max_pH}", font=("Arial", 12), bg='DarkSeaGreen2')
+        ph_label.grid(row=5, column=1, padx=10, pady=5, sticky="w")
 
-        ###### STATUS ######
-        conn = sqlite3.connect('Baza_podataka.db')
-        cur = conn.cursor()
-        cur.execute('SELECT * FROM Biljke WHERE id = ?', (self.plantId,))
-        data_plant = cur.fetchone()
-        if data_plant:
-            cur.execute('SELECT * FROM Posude WHERE idBiljka = ? ORDER BY id DESC', (self.plantId,))
-            data_pot = cur.fetchone()
-            if data_pot: 
-                id_Posude = data_pot[0]
-                cur.execute('SELECT * FROM Senzori WHERE idPosuda = ? ORDER BY id DESC LIMIT 1;', (id_Posude,))
-                data_senzor = cur.fetchone()
-                if data_senzor: 
-                    vlaga_senzor = int(data_senzor[4])
-                    svjetlost_senzor = int(data_senzor[5])
-                    hrana_senzor = int(data_senzor[6])
-                    temperatura_senzor = int(data_senzor[7])
-
-                    temperatura_min_senzor = int(data_plant[3])
-                    temperatura_max_senzor = int(data_plant[4])
-                    vlaga_min_senzor = int(data_plant[5])
-                    vlaga_max_senzor = int(data_plant[6])
-                    svjetlost_min_senzor = int(data_plant[7])
-                    svjetlost_max_senzor = int(data_plant[8])
-                    hrana_min_senzor = int(data_plant[9])
-                    hrana_max_senzor = int(data_plant[10])
-
-                    if vlaga_senzor>vlaga_min_senzor and vlaga_senzor<vlaga_max_senzor:
-                        vlaga_label = tk.Label(self, text="Vlaga je OK!", font=("Arial", 10), bg='DarkSeaGreen2')
-                        vlaga_label.place(x=20, y=170)
-                    elif vlaga_senzor<vlaga_min_senzor:
-                        vlaga_label = tk.Label(self, text="Zaliti biljku!", font=("Arial", 10), bg='DarkSeaGreen2')
-                        vlaga_label.place(x=20, y=170)
-                    elif vlaga_senzor>vlaga_max_senzor:
-                        vlaga_label = tk.Label(self, text="Previse vode!", font=("Arial", 10), bg='DarkSeaGreen2')
-                        vlaga_label.place(x=20, y=170)
-                        
-                    if svjetlost_senzor>svjetlost_min_senzor and svjetlost_senzor<svjetlost_max_senzor:
-                        svjetlost_label = tk.Label(self, text="Svjetlost je OK!", font=("Arial", 10), bg='DarkSeaGreen2')
-                        svjetlost_label.place(x=20, y=190)
-                    elif svjetlost_senzor<svjetlost_min_senzor:
-                        svjetlost_label = tk.Label(self, text="Premjestiti na svjetlo!", font=("Arial", 10), bg='DarkSeaGreen2')
-                        svjetlost_label.place(x=20, y=190)
-                    elif svjetlost_senzor>svjetlost_max_senzor:
-                        svjetlost_label = tk.Label(self, text="Premjestiti u tamu!", font=("Arial", 10), bg='DarkSeaGreen2')
-                        svjetlost_label.place(x=20, y=190)
-                            
-                    if hrana_senzor>hrana_min_senzor and hrana_senzor<hrana_max_senzor:
-                        hrana_label = tk.Label(self, text="Hrana je OK!", font=("Arial", 10), bg='DarkSeaGreen2')
-                        hrana_label.place(x=20, y=210)
-                    elif hrana_senzor<hrana_min_senzor:
-                        hrana_label = tk.Label(self, text="Dodati hranu!", font=("Arial", 10), bg='DarkSeaGreen2')
-                        hrana_label.place(x=20, y=210)
-                    elif hrana_senzor>hrana_max_senzor:
-                        hrana_label = tk.Label(self, text="Previse hrane!", font=("Arial", 10), bg='DarkSeaGreen2')
-                        hrana_label.place(x=20, y=210)
-
-                    if temperatura_senzor>temperatura_min_senzor and temperatura_senzor<temperatura_max_senzor:
-                        temperatura_label = tk.Label(self, text="Temperatura je OK!", font=("Arial", 10), bg='DarkSeaGreen2')
-                        temperatura_label.place(x=20, y=230)
-                    elif temperatura_senzor<temperatura_min_senzor:
-                        temperatura_label = tk.Label(self, text="Premjestiti na toplije!", font=("Arial", 10), bg='DarkSeaGreen2')
-                        temperatura_label.place(x=20, y=230)
-                    elif temperatura_senzor>temperatura_max_senzor:
-                        temperatura_label = tk.Label(self, text="Premjestiti na hladnije!", font=("Arial", 10), bg='DarkSeaGreen2')
-                        temperatura_label.place(x=20, y=230)
-        else:
-            dodaj_biljku()
+        sal_label = tk.Label(self, text=f"Salinitet: {self.min_sal} - {self.max_sal}", font=("Arial", 12), bg='DarkSeaGreen2')
+        sal_label.grid(row=6, column=1, padx=10, pady=5, sticky="w")
 
         # PROVJERITI SIRI LI SE WIDGET S KARTICOM BILJKE KAKO BI ISPUNIO SIRINU ZASLONA
         self.columnconfigure(1, weight=1)
@@ -649,9 +688,11 @@ class PlantCard(tk.Frame):
         self.max_vlaznost = plant_data[6]
         self.min_svjetlost = plant_data[7]
         self.max_svjetlost = plant_data[8]
-        self.min_hrana = plant_data[9]
-        self.max_hrana = plant_data[10]
-        self.photo_image = plant_data[11]
+        self.min_pH = plant_data[9]
+        self.max_pH = plant_data[10]
+        self.min_sal = plant_data[11]
+        self.max_sal = plant_data[12]
+        self.photo_image = plant_data[13]
         with open(self.photo_image, 'rb') as file:
             contents = file.read()
         self.photo = Image.open(io.BytesIO(contents))
@@ -777,7 +818,7 @@ def open_detalji_posuda(id):
 
     name_label = tk.Label(root, text='Posadena biljka:', font=("Arial", 14), bg="DarkSeaGreen2").place(x=350, y=10)
     name_label = tk.Label(root, text=plant_data[1], font=("Arial", 14), bg="DarkSeaGreen2")
-    name_label.place(x=500, y=10)
+    name_label.place(x=600, y=10)
 
     promjenaButton = tk.Button(root, text="Promjena podataka", width=15, font=('Helvetica bold', 10), justify='center', bg='DarkSeaGreen2', anchor=tk.S, command=lambda: posuda_promjena_podataka(id))
     promjenaButton.place(x=10,y=220)
@@ -810,15 +851,15 @@ def line_graph(id,):
 
     # DOHVACANJE X I Y VARIJABLI
     x = [row[0] for row in data]  # VRIJEME
-    y = [row[6] for row in data]  # SENZOR
+    y = [row[4] for row in data]  # SENZOR
 
     # CREIRANJE LINE GRAFA
     fig = plt.Figure(figsize=(8, 4), dpi=100)
     ax = fig.add_subplot(111)
     ax.plot(x, y)
     ax.set_xlabel('Vrijeme')
-    ax.set_ylabel('Hrana')
-    ax.set_title('Senzor hrane')
+    ax.set_ylabel('Vlaga')
+    ax.set_title('Senzor vlage')
 
     canvas_line = FigureCanvasTkAgg(fig, master=root)
     canvas_line.draw()
@@ -836,7 +877,7 @@ def pie_graph(id,):
     data = cur.fetchall()
 
     x = [row[0] for row in data] 
-    y = [row[6] for row in data]  # DOHVACANJE VRIJEDNOSTI
+    y = [row[4] for row in data]  # DOHVACANJE VRIJEDNOSTI
 
     # KREIRANJE PIE
     less_than_80 = [value for value in y if value < 80]
@@ -850,7 +891,7 @@ def pie_graph(id,):
     fig, ax = plt.subplots()
     ax.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90)
     ax.axis('equal')
-    ax.set_title('Senzor hrane')
+    ax.set_title('Senzor vlage')
 
     canvas_pie = FigureCanvasTkAgg(fig, master=root)
     canvas_pie.draw()
@@ -867,13 +908,13 @@ def histo_graph(id,):
     cur.execute('SELECT * FROM Senzori WHERE idPosuda = ? ORDER BY id DESC LIMIT 10;', (id,))
     data = cur.fetchall()
 
-    y = [row[6] for row in data]
+    y = [row[4] for row in data]
 
     fig, ax = plt.subplots()
     ax.hist(y, bins=10)
     ax.set_xlabel('Vrijednost senzora')
     ax.set_ylabel('Frekvencija')
-    ax.set_title('Senzor hrane')
+    ax.set_title('Senzor vlage')
 
     canvas_histo = FigureCanvasTkAgg(fig, master=root)
     canvas_histo.draw()
@@ -986,7 +1027,6 @@ def spremi_posudu(unosimePosude, idBiljka, file_path):
     global spremiClicked
     if(spremiClicked == True):
         unosimePosude_db = unosimePosude.get()
-        idBiljka = 999 if idBiljka is None else idBiljka
 
         create_table_query= '''CREATE TABLE IF NOT EXISTS Posude(
                                     id INTEGER PRIMARY KEY,
@@ -1039,6 +1079,7 @@ def sync_senzor(id,):
     conn.close()
     pot_id = pot_data[0]
 
+
     create_table_query= '''CREATE TABLE IF NOT EXISTS Senzori(
                                 id INTEGER PRIMARY KEY,
                                 idPosuda INTEGER NOT NULL DEFAULT 999,
@@ -1046,7 +1087,8 @@ def sync_senzor(id,):
                                 sat INTEGER NOT NULL,
                                 vlaga INTEGER NOT NULL,
                                 svjetlost INTEGER NOT NULL,
-                                hrana INTEGER NOT NULL,
+                                pH INTEGER NOT NULL,
+                                salinitet INTEGER NOT NULL,
                                 temperatura INTEGER NOT NULL);'''
     database_name='Baza_podataka.db'
 
@@ -1068,10 +1110,11 @@ def sync_senzor(id,):
 
     for i in range(10):
         value = i * 2
-        vlaga = random.randrange(40, 90)
+        vlaga = random.randrange(30, 100)
         svjetlost = random.randrange(3500, 6500)
-        hrana = random.randrange(70, 100)
-        temperatura = random.randrange(18, 28)
+        pH = random.randrange(0, 14)
+        salinitet = random.randrange(30, 100)
+        temperatura = random.randrange(15, 30)
 
         oSenzorV1=f'Senzor Vlage:\t{vlaga} %'
         oSenzorV=tk.StringVar()
@@ -1085,11 +1128,17 @@ def sync_senzor(id,):
         oSenzorSL=tk.Label(root,textvariable=oSenzorS, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
         oSenzorSL.place(x=190,y=70)
 
-        oSenzorH1=f'Senzor Hrane:\t{hrana} %'
-        oSenzorH=tk.StringVar()
-        oSenzorH.set(oSenzorH1)
-        oSenzorHL=tk.Label(root,textvariable=oSenzorH, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-        oSenzorHL.place(x=190,y=105)
+        oSenzorpH1=f'pH:\t{pH}'
+        oSenzorpH=tk.StringVar()
+        oSenzorpH.set(oSenzorpH1)
+        oSenzorpHL=tk.Label(root,textvariable=oSenzorpH, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+        oSenzorpHL.place(x=190,y=105)
+
+        oSenzorSal1=f'pH:\t\t{pH}'
+        oSenzorSal=tk.StringVar()
+        oSenzorSal.set(oSenzorSal1)
+        oSenzorSalL=tk.Label(root,textvariable=oSenzorSal, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+        oSenzorSalL.place(x=190,y=105)
 
         oSenzorT1=f'Senzor temperature: {temperatura} °C'
         oSenzorT=tk.StringVar()
@@ -1097,14 +1146,14 @@ def sync_senzor(id,):
         oSenzorTL=tk.Label(root,textvariable=oSenzorT, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
         oSenzorTL.place(x=190,y=140)
 
-        insert_into_table_query='''INSERT INTO Senzori (idPosuda, dan, sat, vlaga, svjetlost, hrana, temperatura)    
-                                    VALUES (?,?,?,?,?,?,?)'''
+        insert_into_table_query='''INSERT INTO Senzori(idPosuda, dan, sat, vlaga, svjetlost, pH, salinitet, temperatura)    
+                                    VALUES (?,?,?,?,?,?,?,?)'''
                 
     try:
         sqliteConnection=sqlite3.connect(database_name)
         cursor=sqliteConnection.cursor()
         print(f'SQLite baza {database_name} je kreirana i spojena')
-        cursor.execute(insert_into_table_query, (pot_id, dan, sat, vlaga, svjetlost, hrana, temperatura))
+        cursor.execute(insert_into_table_query, (pot_id, dan, sat, vlaga, svjetlost, pH, salinitet, temperatura))
         sqliteConnection.commit()
         cursor.close()
         print('CURSOR otpusten')
@@ -1137,7 +1186,7 @@ def dodaj_posudu():
     plant_list_name = []
     if table_exists:
         cursor.execute("SELECT * FROM Biljke")
-        # DOHVACANJE REZULTATA
+        # DOHVACANJE REZULTATAdodaj_posu
         plant_data = cursor.fetchall()
         # CREIRANJE LISTE ZA DODAVANJE BILJAKA U POSUDE --> PlantList
         plant_list_id = []
@@ -1149,11 +1198,8 @@ def dodaj_posudu():
 
     def save_posuda():
         selected_plant_index = odabranaBiljka.current()
-        if selected_plant_index == 0: 
-            selected_plant_id = None
-        else:
-            selected_plant_id = plant_list_id[selected_plant_index - 1]
-            spremi_posudu(unosimePosude, selected_plant_id, file_path)
+        selected_plant_id = plant_list_id[selected_plant_index]
+        spremi_posudu(unosimePosude, selected_plant_id, file_path)
 
     biljka = tk.Label(root, text="Dodaj biljku", font=('Calibri', 15), bg='DarkSeaGreen2').place(x=20, y=100)
     odabranaBiljka = ttk.Combobox(root, values=plant_list_name)
@@ -1174,12 +1220,19 @@ def dodaj_posudu():
     oSenzorSL=tk.Label(root,textvariable=oSenzorS, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
     oSenzorSL.place(x=20,y=205)
 
-    hrana = random.randrange(0,100)
-    oSenzorH1=f'Senzor Hrane:\t\t{hrana} %'
-    oSenzorH=tk.StringVar()
-    oSenzorH.set(oSenzorH1)
-    oSenzorHL=tk.Label(root,textvariable=oSenzorH, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
-    oSenzorHL.place(x=20,y=240)
+    pH = random.randrange(0,14)
+    oSenzorpH1=f'Senzor pH:\t\t{pH}'
+    oSenzorpH=tk.StringVar()
+    oSenzorpH.set(oSenzorpH1)
+    oSenzorpHL=tk.Label(root,textvariable=oSenzorpH, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+    oSenzorpHL.place(x=20,y=240)
+
+    salinitet = random.randrange(0,100)
+    oSenzorSal1=f'Senzor salinitet:\t\t{salinitet} %'
+    oSenzorSaL=tk.StringVar()
+    oSenzorSaL.set(oSenzorSal1)
+    oSenzorSalL=tk.Label(root,textvariable=oSenzorSaL, font=('Segoe UI',15), bg='DarkSeaGreen2', justify='left')
+    oSenzorSalL.place(x=20,y=240)
 
     temperatura = random.randrange(15,30)
     oSenzorT1=f'Senzor temperature:\t{temperatura} °C'
@@ -1336,135 +1389,135 @@ def open_app():
     root['bg'] = 'DarkSeaGreen2'
     root.geometry('950x500')
     
-    ########  POVLACENJE PODATAKA - TUTIEMPO  #####
-    # temperature=data_json['information']['temperature']
-    # wind=data_json['information']['wind']
-    # humidity=data_json['information']['humidity']
-    # pressure=data_json['information']['pressure']
-    # city=data_json['locality']['name']
-    # country=data_json['locality']['country']
-    # date=data_json['hour_hour']['hour1']['date']
-    # hour=data_json['hour_hour']['hour1']['hour_data']
-    # temp=data_json['hour_hour']['hour1']['temperature']
-    # windspeed=data_json['hour_hour']['hour1']['wind']
-    # humid=data_json['hour_hour']['hour1']['humidity']
-    # press=data_json['hour_hour']['hour1']['pressure']
-    # currenttext=data_json['hour_hour']['hour1']['text']
-    # winddirection=data_json['hour_hour']['hour1']['wind_direction']
-    # #icons
-    # iconcurrenttext=data_json['hour_hour']['hour1']['icon']
-    # iconwind=data_json['hour_hour']['hour1']['icon_wind']
-    # iconmoonphases=data_json['day1']['moon_phases_icon']
+    ########  POVLACENJE PODATAKA - TUTIEMPO  #####F
+    temperature=data_json['information']['temperature']
+    wind=data_json['information']['wind']
+    humidity=data_json['information']['humidity']
+    pressure=data_json['information']['pressure']
+    city=data_json['locality']['name']
+    country=data_json['locality']['country']
+    date=data_json['hour_hour']['hour1']['date']
+    hour=data_json['hour_hour']['hour1']['hour_data']
+    temp=data_json['hour_hour']['hour1']['temperature']
+    windspeed=data_json['hour_hour']['hour1']['wind']
+    humid=data_json['hour_hour']['hour1']['humidity']
+    press=data_json['hour_hour']['hour1']['pressure']
+    currenttext=data_json['hour_hour']['hour1']['text']
+    winddirection=data_json['hour_hour']['hour1']['wind_direction']
+    #icons
+    iconcurrenttext=data_json['hour_hour']['hour1']['icon']
+    iconwind=data_json['hour_hour']['hour1']['icon_wind']
+    iconmoonphases=data_json['day1']['moon_phases_icon']
 
-    # ###### Labeli - naslov ######
-    # rec2=f'Grad: {city},  Drzava: {country}'
-    # recenica2=tk.StringVar()
-    # recenica2.set(rec2)
-    # label=tk.Label(root, textvariable=recenica2, font=('Segoe UI',16),bg='DarkSeaGreen2', justify='left')
-    # label.grid(column=0, row=0,padx=0,pady=0)
+    ###### Labeli - naslov ######
+    rec2=f'Grad: {city},  Drzava: {country}'
+    recenica2=tk.StringVar()
+    recenica2.set(rec2)
+    label=tk.Label(root, textvariable=recenica2, font=('Segoe UI',16),bg='DarkSeaGreen2', justify='left')
+    label.grid(column=0, row=0,padx=0,pady=0)
 
-    # rec2_1=f'Datum i sat: {dan}  {sat}'
-    # recenica2_1=tk.StringVar()
-    # recenica2_1.set(rec2_1)
-    # label2_1=tk.Label(root, textvariable=recenica2_1, font=('Segoe UI',16), bg='DarkSeaGreen2', justify='left')
-    # label2_1.grid(column=2, row=0,padx=0,pady=15)
+    rec2_1=f'Datum i sat: {dan}  {sat}'
+    recenica2_1=tk.StringVar()
+    recenica2_1.set(rec2_1)
+    label2_1=tk.Label(root, textvariable=recenica2_1, font=('Segoe UI',16), bg='DarkSeaGreen2', justify='left')
+    label2_1.grid(column=2, row=0,padx=0,pady=15)
 
-    # ##############    Vremenska prognoza    #############
-    # rec3_1=f'Temperatura: {temp}{temperature}'
-    # recenica3_1=tk.StringVar()
-    # recenica3_1.set(rec3_1)
-    # label3_1=tk.Label(root,textvariable=recenica3_1, font=('Segoe UI',16), bg='DarkSeaGreen2', justify='left')
-    # label3_1.grid(column=0,columnspan=1, row=1,padx=15,pady=15)
+    ##############    Vremenska prognoza    #############
+    rec3_1=f'Temperatura: {temp}{temperature}'
+    recenica3_1=tk.StringVar()
+    recenica3_1.set(rec3_1)
+    label3_1=tk.Label(root,textvariable=recenica3_1, font=('Segoe UI',16), bg='DarkSeaGreen2', justify='left')
+    label3_1.grid(column=0,columnspan=1, row=1,padx=15,pady=15)
 
-    # rec3_2=f'Vjetar: {windspeed}{wind}'
-    # recenica3_2=tk.StringVar()
-    # recenica3_2.set(rec3_2)
-    # label3_2=tk.Label(root,textvariable=recenica3_2, font=('Segoe UI',16), bg='DarkSeaGreen2', justify='left')
-    # label3_2.grid(column=0,columnspan=1, row=2,padx=15,pady=15)
+    rec3_2=f'Vjetar: {windspeed}{wind}'
+    recenica3_2=tk.StringVar()
+    recenica3_2.set(rec3_2)
+    label3_2=tk.Label(root,textvariable=recenica3_2, font=('Segoe UI',16), bg='DarkSeaGreen2', justify='left')
+    label3_2.grid(column=0,columnspan=1, row=2,padx=15,pady=15)
 
-    # rec3_3=f'Vlaznost zraka: {humid}{humidity}'
-    # recenica3_3=tk.StringVar()
-    # recenica3_3.set(rec3_3)
-    # label3_3=tk.Label(root,textvariable=recenica3_3, font=('Segoe UI',16), bg='DarkSeaGreen2', justify='left')
-    # label3_3.grid(column=0,columnspan=1, row=3,padx=15,pady=15)
+    rec3_3=f'Vlaznost zraka: {humid}{humidity}'
+    recenica3_3=tk.StringVar()
+    recenica3_3.set(rec3_3)
+    label3_3=tk.Label(root,textvariable=recenica3_3, font=('Segoe UI',16), bg='DarkSeaGreen2', justify='left')
+    label3_3.grid(column=0,columnspan=1, row=3,padx=15,pady=15)
 
-    # rec3_4=f'Tlak zraka: {press}{pressure}'
-    # recenica3_4=tk.StringVar()
-    # recenica3_4.set(rec3_4)
-    # label3_4=tk.Label(root,textvariable=recenica3_4, font=('Segoe UI',16), bg='DarkSeaGreen2', justify='left')
-    # label3_4.grid(column=0,columnspan=1, row=4,padx=15,pady=15)
+    rec3_4=f'Tlak zraka: {press}{pressure}'
+    recenica3_4=tk.StringVar()
+    recenica3_4.set(rec3_4)
+    label3_4=tk.Label(root,textvariable=recenica3_4, font=('Segoe UI',16), bg='DarkSeaGreen2', justify='left')
+    label3_4.grid(column=0,columnspan=1, row=4,padx=15,pady=15)
 
-    # rec4=f'Prognoza: {currenttext}'
-    # recenica4=tk.StringVar()
-    # recenica4.set(rec4)
-    # label4=tk.Label(root,textvariable=recenica4, font=('Segoe UI',16), bg='DarkSeaGreen2', justify='left')
-    # label4.grid(column=2, row=1, padx=0,pady=15)
+    rec4=f'Prognoza: {currenttext}'
+    recenica4=tk.StringVar()
+    recenica4.set(rec4)
+    label4=tk.Label(root,textvariable=recenica4, font=('Segoe UI',16), bg='DarkSeaGreen2', justify='left')
+    label4.grid(column=2, row=1, padx=0,pady=15)
 
-    # rec5=f'Vjetar {winddirection}'
-    # recenica5=tk.StringVar()
-    # recenica5.set(rec5)
-    # label5=tk.Label(root,textvariable=recenica5, font=('Segoe UI',16), bg='DarkSeaGreen2', justify='left')
-    # label5.grid(column=2, row=2, padx=0,pady=15)
+    rec5=f'Vjetar {winddirection}'
+    recenica5=tk.StringVar()
+    recenica5.set(rec5)
+    label5=tk.Label(root,textvariable=recenica5, font=('Segoe UI',16), bg='DarkSeaGreen2', justify='left')
+    label5.grid(column=2, row=2, padx=0,pady=15)
 
-    # rec6=f'Mjeseceve mijene'
-    # recenica6=tk.StringVar()
-    # recenica6.set(rec6)
-    # label6=tk.Label(root,textvariable=recenica6, font=('Segoe UI',16), bg='DarkSeaGreen2', justify='left')
-    # label6.grid(column=2, row=3, padx=0,pady=15)
+    rec6=f'Mjeseceve mijene'
+    recenica6=tk.StringVar()
+    recenica6.set(rec6)
+    label6=tk.Label(root,textvariable=recenica6, font=('Segoe UI',16), bg='DarkSeaGreen2', justify='left')
+    label6.grid(column=2, row=3, padx=0,pady=15)
 
-    # ######## IKONE - Prognoza ########
-    # size=90
-    # urlimgforecast=f'https://v5i.tutiempo.net/wi/02/{size}/{iconcurrenttext}.png'
-    # with urllib.request.urlopen(urlimgforecast) as connection:
-    #     raw_data=connection.read()
-    # im=Image.open(io.BytesIO(raw_data))
-    # im = im.resize((70,70))
-    # imageforecast=ImageTk.PhotoImage(im)
+    ######## IKONE - Prognoza ########
+    size=90
+    urlimgforecast=f'https://v5i.tutiempo.net/wi/02/{size}/{iconcurrenttext}.png'
+    with urllib.request.urlopen(urlimgforecast) as connection:
+        raw_data=connection.read()
+    im=Image.open(io.BytesIO(raw_data))
+    im = im.resize((70,70))
+    imageforecast=ImageTk.PhotoImage(im)
 
-    # urlimgwind=f'https://v5i.tutiempo.net/wd/big/black/{iconwind}.png'
-    # with urllib.request.urlopen(urlimgwind) as connection:
-    #     raw_data=connection.read()
-    # im=Image.open(io.BytesIO(raw_data))
-    # im = im.resize((70,70))
-    # imagewind=ImageTk.PhotoImage(im)
+    urlimgwind=f'https://v5i.tutiempo.net/wd/big/black/{iconwind}.png'
+    with urllib.request.urlopen(urlimgwind) as connection:
+        raw_data=connection.read()
+    im=Image.open(io.BytesIO(raw_data))
+    im = im.resize((70,70))
+    imagewind=ImageTk.PhotoImage(im)
 
-    # urlimgmoon=f'https://v5i.tutiempo.net/wmi/02/{iconmoonphases}.png'
-    # with urllib.request.urlopen(urlimgmoon) as connection:
-    #     raw_data=connection.read()
-    # im=Image.open(io.BytesIO(raw_data))
-    # im = im.resize((70,70))
-    # imagemoon=ImageTk.PhotoImage(im)
+    urlimgmoon=f'https://v5i.tutiempo.net/wmi/02/{iconmoonphases}.png'
+    with urllib.request.urlopen(urlimgmoon) as connection:
+        raw_data=connection.read()
+    im=Image.open(io.BytesIO(raw_data))
+    im = im.resize((70,70))
+    imagemoon=ImageTk.PhotoImage(im)
 
-    # imgforecast=tk.Label(root, image=imageforecast, bg='DarkSeaGreen2')
-    # imgforecast.grid(column=4, row=1,padx=30,pady=15)
-    # imgwind=tk.Label(root, image=imagewind, bg='DarkSeaGreen2')
-    # imgwind.grid(column=4, row=2,padx=30,pady=15)
-    # imgmoon=tk.Label(root, image=imagemoon, bg='DarkSeaGreen2')
-    # imgmoon.grid(column=4, row=3,padx=30,pady=15)
+    imgforecast=tk.Label(root, image=imageforecast, bg='DarkSeaGreen2')
+    imgforecast.grid(column=4, row=1,padx=30,pady=15)
+    imgwind=tk.Label(root, image=imagewind, bg='DarkSeaGreen2')
+    imgwind.grid(column=4, row=2,padx=30,pady=15)
+    imgmoon=tk.Label(root, image=imagemoon, bg='DarkSeaGreen2')
+    imgmoon.grid(column=4, row=3,padx=30,pady=15)
 
-    # imgTemp=Image.open("Slike\Vremenska_prognoza\Temperatura.jpg")
-    # imgTempR=imgTemp.resize((70,70), Image.ANTIALIAS)
-    # imgTempN= ImageTk.PhotoImage(imgTempR)
-    # label=Label(root, image=imgTempN)
-    # label.grid(column=1, row=1)
+    imgTemp=Image.open("Slike\Vremenska_prognoza\Temperatura.jpg")
+    imgTempR=imgTemp.resize((70,70), Image.ANTIALIAS)
+    imgTempN= ImageTk.PhotoImage(imgTempR)
+    label=Label(root, image=imgTempN)
+    label.grid(column=1, row=1)
 
-    # imgVjetar=Image.open("Slike\Vremenska_prognoza\Vjetar.jpg")
-    # imgVjetarR=imgVjetar.resize((70,70), Image.ANTIALIAS)
-    # imgVjetarN= ImageTk.PhotoImage(imgVjetarR)
-    # label=Label(root, image=imgVjetarN)
-    # label.grid(column=1, row=2)
+    imgVjetar=Image.open("Slike\Vremenska_prognoza\Vjetar.jpg")
+    imgVjetarR=imgVjetar.resize((70,70), Image.ANTIALIAS)
+    imgVjetarN= ImageTk.PhotoImage(imgVjetarR)
+    label=Label(root, image=imgVjetarN)
+    label.grid(column=1, row=2)
 
-    # imgVlaznost=Image.open("Slike\Vremenska_prognoza\Vlaznost.jpg")
-    # imgVlaznostR=imgVlaznost.resize((70,70), Image.ANTIALIAS)
-    # imgVlaznostN= ImageTk.PhotoImage(imgVlaznostR)
-    # label=Label(root, image=imgVlaznostN)
-    # label.grid(column=1, row=3)
+    imgVlaznost=Image.open("Slike\Vremenska_prognoza\Vlaznost.jpg")
+    imgVlaznostR=imgVlaznost.resize((70,70), Image.ANTIALIAS)
+    imgVlaznostN= ImageTk.PhotoImage(imgVlaznostR)
+    label=Label(root, image=imgVlaznostN)
+    label.grid(column=1, row=3)
 
-    # imgTlak=Image.open("Slike\Vremenska_prognoza\Tlak.jpg")
-    # imgTlakR=imgTlak.resize((70,70), Image.ANTIALIAS)
-    # imgTlakN= ImageTk.PhotoImage(imgTlakR)
-    # label=Label(root, image=imgTlakN)
-    # label.grid(column=1, row=4)
+    imgTlak=Image.open("Slike\Vremenska_prognoza\Tlak.jpg")
+    imgTlakR=imgTlak.resize((70,70), Image.ANTIALIAS)
+    imgTlakN= ImageTk.PhotoImage(imgTlakR)
+    label=Label(root, image=imgTlakN)
+    label.grid(column=1, row=4)
     
     mojProfilButton=Button(root, text="Moj profil",width=15, font=('Helvetica bold',10), justify='right', bg='DarkSeaGreen2', command=open_profil).place(x=800, y=10)
     biljkeButton=Button(root, text="Biljke",width=15, font=('Helvetica bold',10), justify='right' ,bg='DarkSeaGreen2', command=open_biljke).place(x=800, y=40)
